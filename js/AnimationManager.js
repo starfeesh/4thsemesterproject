@@ -1,36 +1,38 @@
-var laneCamera;
-var parent, animation;
-var frameRate = 1000;
 class AnimationManager {
-    Setup(){
-        parent = new BABYLON.Mesh.CreateBox("cambox", 20, scene);
-        //laneCamera.parent = parent;
-        //laneCamera.position = new BABYLON.Vector3(0,5,0);
-        laneCamera.lockedTarget = parent;
-        parent.isVisible = false;
-        parent.alpha = 0;
-
-        scene.activeCamera = laneCamera;
-    }
-    CameraJourneyAnimation(tubePath){
-        var animation = new BABYLON.Animation("camanim", "position", 10, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-                            BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+    rotateGlobe(globeCamera){
+        var animation = new BABYLON.Animation("globeanim", "alpha", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var current = globeCamera.alpha;
         var keys = [];
-        for (var i = 0; i < tubePath.length; i++){
-            keys.push({
-                frame: i,
-                value: tubePath[i]
-            });
-        }
-        animation.setKeys(keys);
-        parent.animations.push(animation);
-        scene.beginAnimation(parent, 0, 100 * frameRate, false)
-    }
+        keys.push({
+            frame: 0,
+            value: current
+        });
+        keys.push({
+            frame: 100,
+            value: -15
+        });
 
-    Update() {
-        if (typeof parent !== "undefined")
-        {
-         //console.log(parent.position)
-        }
+        animation.setKeys(keys);
+        globeCamera.animations.push(animation);
+        baseScene.beginAnimation(globeCamera, 0, 30, false);
+    }
+    zoomGlobe(globeCamera) {
+        var animation = new BABYLON.Animation("zoomanim", "radius", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+
+        var current = globeCamera.radius;
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: current
+        });
+        keys.push({
+            frame: 100,
+            value: 5
+        });
+        animation.setKeys(keys);
+        globeCamera.animations.push(animation);
+        baseScene.beginAnimation(globeCamera, 0, 30, false);
     }
 }
