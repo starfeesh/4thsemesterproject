@@ -2,18 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>4th Semester Project</title>
-    <link rel="stylesheet" href="css/main.css">
-    <script src="js/babylon.custom.js"></script>
+    <title>blah</title>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
 </head>
 <body>
-<nav class="nav"><a class="home">Home</a> <a class="aggregation">Aggregation</a> <a class="">Resilience</a> <a class="">Prioritisation</a> </nav>
 <canvas id="renderCanvas"></canvas>
-<div class="mimic">
-<img src="img/mimic-button.png">
-</div>
-<script src="js/ParticleManager.js"></script>
-<script src="js/AnimationManager.js"></script>
-<script src="js/Main.js"></script>
+<script src="js/babylon.custom.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
