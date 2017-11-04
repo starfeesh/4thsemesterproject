@@ -1,0 +1,32 @@
+{
+  "states":
+  [
+    {
+      "stateName": "OVERVIEW_STATE",
+      "className": "OverviewScenario",
+      "modes":
+      [
+        {
+          "stateName": "DEFAULT",
+          "className": "DefaultOverviewMode"
+        },
+        {
+          "stateName": "MIMIC",
+          "className": "MimicOverviewMode"
+        }
+      ]
+    },
+    {
+    "stateName": "PRIORITISATION_STATE",
+    "className": "PrioritisationScenario"
+    },
+    {
+    "stateName": "AGGREGATION_STATE",
+    "className": "AggregationScenario"
+    },
+    {
+    "stateName": "RESILIENCE_STATE",
+    "className": "RESILIENCEScenario"
+    }
+  ]
+}

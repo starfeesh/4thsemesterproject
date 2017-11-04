@@ -1,31 +1,66 @@
-const OVERVIEW_STATE = 0;
-const PRIORITIZATION_STATE = 1;
-const RESILIENCE_STATE = 2;
-const AGGREGATION_STATE = 3;
 var canvas, engine, scene, camera;
 var stateManager;
 var inputHandler;
 var uIHandler;
+var jsonHandler;
+class JsonHandler {
+    loadStateJson(callback){
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+        xobj.open('GET', 'data/states.json', true);
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState === 4 && xobj.status == "200") {
+                callback(xobj.responseText);
+            }
+        }.bind(this);
+        xobj.send(null);
 
+    }
+    callLoad() {
+        this.loadStateJson(function (response) {
+            this.setLookup(JSON.parse(response));
+            stateManager.setUp();
+        }.bind(this));
+    }
+    setLookup(json) {
+        this.stateLookup = json;
+    }
+    getLookup() {
+        return this.stateLookup;
+    }
+}
 class StateManager {
-    constructor(){
+    setUp() {
         this.currentState = "";
         var stage = new Stage();
-        this.selectState(OVERVIEW_STATE);
+        this.stateLookup = jsonHandler.getLookup();
+        var startingState = this.stateLookup.states[0].className;
+        this.selectState(startingState);
     }
     selectState(stateID){
         if (typeof this.currentState === 'object') {
             this.currentState.tearDown();
         }
+        // If I am being called as a mode, iterate through my parent which is a scenario.
+        // If I am being called as a scenario, iterate through top level scenarios.
+        //if (this.isScenario) {
+        //
+        //}
+        var currentClass;
+        for (var i = 0; i > this.stateLookup.states.length; i++) {
+            // Figure out how to get currentState to be scenario.
+            this.currentState = this.stateLookup.states[i].className[stateID];
+        }
 
-        switch (stateID) {
+        this.currentState.setUp();
+        /*switch (stateID) {
             case OVERVIEW_STATE:
                 this.currentState = new OverviewScenario(this);
                 break;
             case PRIORITIZATION_STATE:
                 this.currentState = new PrioritizationScenario(this);
                 break;
-        }
+        }*/
     }
 }
 class Stage {
@@ -46,74 +81,49 @@ class Stage {
         }.bind(this))
     }
 }
-class OverviewScenario {
-    constructor(stateManager) {
-        this.stateManager = stateManager;
+class BaseScenario extends StateManager {
+    baseSetUp() {
+        // Anytime anything is created, push to this.babylonObjects.
         this.babylonObjects = [];
-        this.setUp();
+        //var self = this;
+        //var selectState = function () {
+        //    self.selectState(PRIORITIZATION_STATE);
+        //};
+    }
+    baseTearDown() {
+        // Iterate through this.babylonObjects and .dispose() of them.
+        for (var i = this.babylonObjects.length - 1; i >= 0; i--){
+            var objectToRemove = this.babylonObjects.splice(i, 1);
+            objectToRemove[0].dispose();
+            objectToRemove[0] = null;
+        }
+    }
+}
+class OverviewScenario extends BaseScenario {
+    constructor() {
+        super();
+        //this.baseScenario = super;
+        this.isScenario = true;
     }
     setUp() {
-        // Anytime anything is created, push to this.babylonObjects.
-        var self = this;
-        var selectState = function () {
-            self.stateManager.selectState(PRIORITIZATION_STATE);
-        };
-        var prioritizationButton = uIHandler.createButton("Prioritization Scenario", selectState);
+        this.baseScenario.baseSetUp();
+        var prioritizationButton = uIHandler.createButton("Prioritization Scenario", this.selectState);
         this.babylonObjects.push(prioritizationButton);
     }
     tearDown() {
-        // Iterate through this.babylonObjects and .dispose() of them.
-        for (var i = this.babylonObjects.length - 1; i >= 0; i--){
-            var objectToRemove = this.babylonObjects.splice(i, 1);
-            objectToRemove[0].dispose();
-            objectToRemove[0] = null;
-        }
-        console.log(this.babylonObjects);
-        console.log(objectToRemove[0])
-    }
-    setDefaultMode() {
-        // Default behavior of things in setUp.
-    }
-    setMimicMode() {
-
+        this.baseScenario.baseTearDown();
     }
 }
-class PrioritizationScenario {
-    constructor(stateManager) {
-        this.stateManager = stateManager;
-        this.babylonObjects = [];
-        this.setUp();
+class PrioritizationScenario extends BaseScenario {
+    constructor() {
+        //this.baseScenario = super;
+        this.isScenario = true;
     }
     setUp() {
-        // Anytime anything is created, push to this.babylonObjects.
-        var self = this;
-        var selectState = function () {
-            self.stateManager.selectState(OVERVIEW_STATE);
-        };
-        var overviewButton = uIHandler.createButton("Overview Scenario", selectState);
+        var overviewButton = uIHandler.createButton("Overview Scenario", this.selectState);
         this.babylonObjects.push(overviewButton);
     }
     tearDown() {
-        // Iterate through this.babylonObjects and .dispose() of them.
-        for (var i = this.babylonObjects.length - 1; i >= 0; i--){
-            var objectToRemove = this.babylonObjects.splice(i, 1);
-            objectToRemove[0].dispose();
-            objectToRemove[0] = null;
-        }
-        console.log(this.babylonObjects);
-        console.log(objectToRemove[0])
-    }
-    setTopdownDefaultMode() {
-        // Default behavior of things in setUp.
-    }
-    setTopdownMimicMode() {
-
-    }
-    setWipeoutDefaultMode() {
-
-    }
-    setWipeoutMimicMode() {
-
     }
     showDashboard() {
 
@@ -167,7 +177,10 @@ document.addEventListener('DOMContentLoaded', function () {
         engine = new BABYLON.Engine(canvas, true);
         inputHandler = new InputHandler();
         uIHandler = new UIHandler();
+        jsonHandler = new JsonHandler();
+        jsonHandler.callLoad();
         stateManager = new StateManager();
+
 
     }
 });
