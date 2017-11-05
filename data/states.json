@@ -1,32 +1,37 @@
 {
-  "states":
-  [
+  "scenarios":
+  {
+    "overview":
     {
-      "stateName": "OVERVIEW_STATE",
-      "className": "OverviewScenario",
+      "className": "OverviewScenario"
+    },
+    "prioritization":
+    {
+      "className": "PrioritizationScenario",
       "modes":
-      [
+      {
+        "topDownNormal":
         {
-          "stateName": "DEFAULT",
-          "className": "DefaultOverviewMode"
+          "className": "PrioritizationTopDownNormalMode"
         },
+        "topDownMimic":
         {
-          "stateName": "MIMIC",
-          "className": "MimicOverviewMode"
+          "className": "PrioritizationTopDownMimicMode"
+        },
+        "wipeoutNormal":
+        {
+          "className": "PrioritizationWipeoutNormalMode"
+        },
+        "wipeoutMimic":
+        {
+          "className": "PrioritizationWipeoutMimicMode"
         }
-      ]
-    },
-    {
-    "stateName": "PRIORITISATION_STATE",
-    "className": "PrioritisationScenario"
-    },
-    {
-    "stateName": "AGGREGATION_STATE",
-    "className": "AggregationScenario"
-    },
-    {
-    "stateName": "RESILIENCE_STATE",
-    "className": "RESILIENCEScenario"
+      }
     }
-  ]
+  }
 }
+
+
+
+
+

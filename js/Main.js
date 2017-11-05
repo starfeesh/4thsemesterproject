@@ -14,7 +14,6 @@ class JsonHandler {
             }
         }.bind(this);
         xobj.send(null);
-
     }
     callLoad() {
         this.loadStateJson(function (response) {
@@ -29,38 +28,36 @@ class JsonHandler {
         return this.stateLookup;
     }
 }
+class ObjectFactory {
+    constructor(className, constructorParams) {
+        return new dynamicClassMap[className](constructorParams);
+    }
+}
 class StateManager {
     setUp() {
-        this.currentState = "";
         var stage = new Stage();
         this.stateLookup = jsonHandler.getLookup();
-        var startingState = this.stateLookup.states[0].className;
-        this.selectState(startingState);
+
+        this.changeScenario("overview");
     }
-    selectState(stateID){
-        if (typeof this.currentState === 'object') {
-            this.currentState.tearDown();
-        }
-        // If I am being called as a mode, iterate through my parent which is a scenario.
-        // If I am being called as a scenario, iterate through top level scenarios.
-        //if (this.isScenario) {
-        //
-        //}
-        var currentClass;
-        for (var i = 0; i > this.stateLookup.states.length; i++) {
-            // Figure out how to get currentState to be scenario.
-            this.currentState = this.stateLookup.states[i].className[stateID];
+    changeScenario(newScenario){
+        if (typeof this.currentScenario === 'object') {
+            this.currentScenario.tearDown();
         }
 
-        this.currentState.setUp();
-        /*switch (stateID) {
-            case OVERVIEW_STATE:
-                this.currentState = new OverviewScenario(this);
-                break;
-            case PRIORITIZATION_STATE:
-                this.currentState = new PrioritizationScenario(this);
-                break;
-        }*/
+        var newScenarioClassName = this.stateLookup.scenarios[newScenario].className;
+
+        this.currentScenario = new ObjectFactory(newScenarioClassName, null);
+        this.currentScenario.setUp();
+    }
+    changeMode(currentScenario, newMode) {
+        if (typeof this.currentMode === 'object') {
+            this.currentMode.tearDown();
+        }
+        var newModeClassName = this.stateLookup.scenarios[currentScenario].modes[newMode].className;
+
+        this.currentMode = new ObjectFactory(newModeClassName, null);
+        this.currentMode.setUp();
     }
 }
 class Stage {
@@ -73,6 +70,10 @@ class Stage {
         var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
         light.intensity = 0.5;
 
+        uIHandler.createUIBase();
+        uIHandler.createUIElements();
+        this.createSkybox();
+
         engine.runRenderLoop(function () {
             scene.render();
             light.position = camera.position;
@@ -80,17 +81,16 @@ class Stage {
             // console.log(this.globeCamera.alpha)
         }.bind(this))
     }
+    createSkybox() {
+
+    }
 }
-class BaseScenario extends StateManager {
-    baseSetUp() {
+class BaseScenario {
+    constructor() {
         // Anytime anything is created, push to this.babylonObjects.
         this.babylonObjects = [];
-        //var self = this;
-        //var selectState = function () {
-        //    self.selectState(PRIORITIZATION_STATE);
-        //};
     }
-    baseTearDown() {
+    tearDown() {
         // Iterate through this.babylonObjects and .dispose() of them.
         for (var i = this.babylonObjects.length - 1; i >= 0; i--){
             var objectToRemove = this.babylonObjects.splice(i, 1);
@@ -99,39 +99,50 @@ class BaseScenario extends StateManager {
         }
     }
 }
-class OverviewScenario extends BaseScenario {
+class BaseMode extends BaseScenario {
     constructor() {
         super();
-        //this.baseScenario = super;
-        this.isScenario = true;
-    }
-    setUp() {
-        this.baseScenario.baseSetUp();
-        var prioritizationButton = uIHandler.createButton("Prioritization Scenario", this.selectState);
-        this.babylonObjects.push(prioritizationButton);
-    }
-    tearDown() {
-        this.baseScenario.baseTearDown();
     }
 }
-class PrioritizationScenario extends BaseScenario {
-    constructor() {
-        //this.baseScenario = super;
-        this.isScenario = true;
-    }
-    setUp() {
-        var overviewButton = uIHandler.createButton("Overview Scenario", this.selectState);
-        this.babylonObjects.push(overviewButton);
-    }
-    tearDown() {
-    }
-    showDashboard() {
 
-    }
-    hideDashboard() {
+const dynamicClassMap = {
+    OverviewScenario: class extends BaseScenario {
+        constructor() {
+            super();
+        }
+        setUp() {
+            console.log("Reached Overview Scenario");
 
+            var loader = new BABYLON.AssetsManager(scene);
+            var globe = loader.addMeshTask("globe", "", "models/", "globe7.babylon");
+            var innerGlobe = loader.addMeshTask("outer", "", "models/", "inner.babylon");
+            var highlight = new BABYLON.HighlightLayer("hl", scene);
+
+            globe.onSuccess = function (task) {
+                highlight.addMesh(task.loadedMeshes[0], new BABYLON.Color3.FromHexString("#315d28"));
+                highlight.innerGlow = false;
+                highlight.blurHorizontalSize = 3;
+                highlight.blurVerticalSize = 3;
+            }.bind(this);
+
+            loader.load();
+        }
+    },
+    PrioritizationScenario: class extends BaseScenario {
+        constructor() {
+            super();
+        }
+        setUp() {
+            console.log("Reached Prioritization Scenario")
+        }
+        showDashboard() {
+
+        }
+        hideDashboard() {
+
+        }
     }
-}
+};
 
 class InputHandler {
     attachUIListener(obj, methodName) {
@@ -149,6 +160,48 @@ class InputHandler {
 }
 
 class UIHandler {
+    createUIBase() {
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        this.uiContainer = new BABYLON.GUI.Rectangle();
+        this.uiContainer.width = "14%";
+        this.uiContainer.height = "114px";
+        this.uiContainer.thickness = 1;
+        this.uiContainer.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this.uiContainer.left = "1%";
+        advancedTexture.addControl(this.uiContainer);
+    }
+    createUIElements() {
+        var setOverviewState = function () {
+            stateManager.changeScenario("overview");
+        };
+        var homeContainer = new BABYLON.GUI.Rectangle();
+        homeContainer.width = "100%";
+        homeContainer.height = "52px";
+        homeContainer.thickness = 0;
+        homeContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        var home = new BABYLON.GUI.Button.CreateImageOnlyButton("homeButton", "img/ui/home.png");
+        home.thickness = 0;
+        inputHandler.attachUIListener(home, setOverviewState);
+        homeContainer.addControl(home);
+
+        var setPrioritizationState = function () {
+            stateManager.changeScenario("prioritization");
+        };
+        var prioritizationContainer = new BABYLON.GUI.Rectangle();
+        prioritizationContainer.width = "100%";
+        prioritizationContainer.height = "52px";
+        prioritizationContainer.thickness = 0;
+        prioritizationContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+        var prioritization = new BABYLON.GUI.Button.CreateImageOnlyButton("homeButton", "img/ui/prioritization.png");
+        prioritization.thickness = 0;
+        inputHandler.attachUIListener(prioritization, setPrioritizationState);
+        prioritizationContainer.addControl(prioritization);
+
+
+
+        this.uiContainer.addControl(prioritizationContainer);
+        this.uiContainer.addControl(homeContainer);
+    }
     createButton(buttonText, methodName) {
         var parentTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
@@ -180,7 +233,5 @@ document.addEventListener('DOMContentLoaded', function () {
         jsonHandler = new JsonHandler();
         jsonHandler.callLoad();
         stateManager = new StateManager();
-
-
     }
 });
