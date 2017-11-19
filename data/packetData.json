@@ -1,0 +1,76 @@
+{
+  "packets": [
+    {
+      "type": "salesforce",
+      "color": "#00A32E",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-green.png"
+    },
+    {
+      "type": "email",
+      "color": "#00A32E",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-green.png"
+    },
+    {
+      "type": "voice",
+      "color": "#00A32E",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-green.png"
+    },
+    {
+      "type": "webex",
+      "color": "#00A32E",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-green.png"
+    },
+    {
+      "type": "office365",
+      "color": "#00A32E",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-green.png"
+    },
+    {
+      "type": "software updates",
+      "color": "#A3A300",
+      "count": 50,
+      "emissiveTexture": "img/packet-emissive-yellow.png"
+    },
+    {
+      "type": "dropbox",
+      "color": "#A3A300",
+      "count": 50,
+      "emissiveTexture": "img/packet-emissive-yellow.png"
+    },
+    {
+      "type": "social media",
+      "color": "#A3A300",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-yellow.png"
+    },
+    {
+      "type": "spotify",
+      "color": "#99000B",
+      "count": 50,
+      "emissiveTexture": "img/packet-emissive-red.png"
+    },
+    {
+      "type": "bittorent",
+      "color": "#99000B",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-red.png"
+    },
+    {
+      "type": "gaming",
+      "color": "#99000B",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-red.png"
+    },
+    {
+      "type": "netflix",
+      "color": "#99000B",
+      "count": 25,
+      "emissiveTexture": "img/packet-emissive-red.png"
+    }
+  ]
+}

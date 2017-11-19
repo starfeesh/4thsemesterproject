@@ -3,27 +3,30 @@
   {
     "overview":
     {
-      "className": "OverviewScenario"
+      "className": "OverviewScenario",
+      "modes": {
+        "dummy": {
+          "className": "OverviewDummyMode"
+        }
+      }
     },
     "prioritization":
     {
       "className": "PrioritizationScenario",
-      "modes":
-      {
-        "topDownNormal":
-        {
+      "modes": {
+        "dummy": {
+          "className": "PrioritizationDummyMode"
+        },
+        "topDownNormal": {
           "className": "PrioritizationTopDownNormalMode"
         },
-        "topDownMimic":
-        {
+        "topDownMimic": {
           "className": "PrioritizationTopDownMimicMode"
         },
-        "wipeoutNormal":
-        {
+        "wipeoutNormal": {
           "className": "PrioritizationWipeoutNormalMode"
         },
-        "wipeoutMimic":
-        {
+        "wipeoutMimic": {
           "className": "PrioritizationWipeoutMimicMode"
         }
       }
