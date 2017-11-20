@@ -18,7 +18,7 @@ class AnimationManager {
 
         return movementAnim;
     }
-    movePacket(packetCube, lanes) {
+    moveNormalPacket(packetSphere, lanes) {
         var packetFlow = new BABYLON.Animation("packetFlow", "position", 5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
             BABYLON.ANIMATIONLOOPMODE_CONSTANT);
 
@@ -31,8 +31,20 @@ class AnimationManager {
             keysFlow.push({ frame: i, value: new BABYLON.Vector3(Math.sin(i) * radius + lane[i].x + ranOffset, Math.sin(i) * radius + lane[i].y + ranOffset, Math.sin(i) * radius + lane[i].z + ranOffset) });
         }
         packetFlow.setKeys(keysFlow);
-        packetCube.animations.push(packetFlow);
+        packetSphere.animations.push(packetFlow);
 
         return packetFlow;
+    }
+    moveMimicPacket(packetSphere, lanes, speed) {
+        var mimicPacketFlow = new BABYLON.Animation("mimicPacketFlow", "position", speed, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var mimicKeysFlow = [];
+        var lane = lanes[Math.floor(Math.random() * lanes.length)];
+        for (var i = 0; i < lane.length; i++) {
+            mimicKeysFlow.push({ frame: i, value: lane[i] });
+        }
+
+        mimicPacketFlow.setKeys(mimicKeysFlow);
+        packetSphere.animations.push(mimicPacketFlow);
     }
 }

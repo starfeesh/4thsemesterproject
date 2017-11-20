@@ -404,9 +404,9 @@ const dynamicClassMap = {
                 for (var j = packet.count - 1; j >= 0; j--) {
                     var ranTime = Math.round(Math.random() * (12000 - 1000)) + 1000;
                     (function(subjectPacket, objects) {
-                        if (!debugMode) {
-                            console.log('[' + new Date().toISOString() + ']' + " scheduling a " + subjectPacket.color + " for " + ranTime + " from now.")
-                        }
+                        //if (debugMode) {
+                        //    console.log('[' + new Date().toISOString() + ']' + " scheduling a " + subjectPacket.color + " for " + ranTime + " from now.")
+                        //}
 
                         setTimeout(function () {
                             var packetClone = packetSphere.clone("clone");
@@ -414,10 +414,8 @@ const dynamicClassMap = {
                             packetMat.diffuseColor = new BABYLON.Color3.FromHexString(subjectPacket.color);
                             packetMat.emissiveTexture = new BABYLON.Texture(subjectPacket.emissiveTexture, scene);
                             packetClone.material = packetMat;
-                            //var highlight = new BABYLON.HighlightLayer("hl", scene);
-                            //highlight.addMesh(packetSphere, BABYLON.Color3.FromHexString(packet.color));
 
-                            animManager.movePacket(packetClone, lanes);
+                            animManager.moveNormalPacket(packetClone, lanes);
 
                             scene.beginAnimation(packetClone, 0, this.pathPointCount, true);
 
@@ -446,17 +444,36 @@ const dynamicClassMap = {
             var lanes = [];
 
             for (var i = 0; i < laneCount; i++) {
-                var origin = new BABYLON.Vector3(97 + (i * 2), 20, -885);
-                var p1 = new BABYLON.Vector3(100 + (i * 2), 600, -285);
-                var p2 = new BABYLON.Vector3(100 + (i * 2), 600, 285);
-                var destination = new BABYLON.Vector3(97 + (i * 2), 20, 885);
+                var origin = new BABYLON.Vector3(102, 20, -885);
+                var p1 = new BABYLON.Vector3(100 + (i * 20), 600, -285);
+                var p2 = new BABYLON.Vector3(100 + (i * 20), 600, 285);
+                var destination = new BABYLON.Vector3(102, 20, 885);
                 var bezierVector = BABYLON.Curve3.CreateCubicBezier(
                     origin,
                     p1,
                     p2,
                     destination, this.pathPointCount);
                 var path = bezierVector.getPoints();
-                lanes.push(path);
+
+                //TODO: Improve this to make it more extendable. Currently hard coded.
+                if (i < 3) {
+                    path.laneType = "green";
+                    var line = BABYLON.Mesh.CreateLines("bezier", path, scene);
+                    line.color = new BABYLON.Color3.FromHexString("#00A32E");
+                    lanes.push(path);
+                }
+                else if (i >= 3 && i < 5) {
+                    path.laneType = "yellow";
+                    line = BABYLON.Mesh.CreateLines("bezier", path, scene);
+                    line.color = new BABYLON.Color3.FromHexString("#A3A300");
+                    lanes.push(path);
+                }
+                else if (i === 5) {
+                    path.laneType = "red";
+                    line = BABYLON.Mesh.CreateLines("bezier", path, scene);
+                    line.color = new BABYLON.Color3.FromHexString("#99000B");
+                    lanes.push(path);
+                }
 
                 this.babylonObjects.push(origin, p1, p2, destination, bezierVector, path);
             }
@@ -464,11 +481,65 @@ const dynamicClassMap = {
 
             this.babylonObjects.push(lanes);
         }
-        spawnPackets() {
+        spawnPackets(lanes) {
             var packetSphere = new BABYLON.Mesh.CreateSphere("packet", 6, 5, scene);
             packetSphere.position = new BABYLON.Vector3(102, 20, -885);
 
-            
+            var greenLanes = [];
+            var yellowLanes = [];
+            var redLanes = [];
+
+            for (var i = 0; i < lanes.length; i++) {
+                if (lanes[i].laneType === "green") {
+                    greenLanes.push(lanes[i]);
+                }
+                else if (lanes[i].laneType === "yellow") {
+                    yellowLanes.push(lanes[i]);
+                }
+                else if (lanes[i].laneType === "red") {
+                    redLanes.push(lanes[i]);
+                }
+            }
+
+            this.packets.forEach(function (packet) {
+                var count = packet.count * 2;
+                for (var j = count - 1; j >= 0; j--) {
+                    var ranTime = Math.round(Math.random() * (18000 - 2000)) + 2000;
+
+                    (function(subjectPacket, objects) {
+                        //if (debugMode) {
+                        //    console.log('[' + new Date().toISOString() + ']' + " scheduling a " + subjectPacket.color + " for " + ranTime + " from now.")
+                        //}
+
+                        setTimeout(function () {
+                            var packetClone = packetSphere.clone("clone");
+                            var packetMat = new BABYLON.StandardMaterial("packetMat", scene);
+                            packetMat.diffuseColor = new BABYLON.Color3.FromHexString(subjectPacket.color);
+                            packetMat.emissiveTexture = new BABYLON.Texture(subjectPacket.emissiveTexture, scene);
+                            packetClone.material = packetMat;
+
+                            switch (subjectPacket.color) {
+                                case "#00A32E":
+                                    animManager.moveMimicPacket(packetClone, greenLanes, 7);
+                                    break;
+                                case "#A3A300":
+                                    animManager.moveMimicPacket(packetClone, yellowLanes, 4);
+                                    break;
+                                case "#99000B":
+                                    animManager.moveMimicPacket(packetClone, redLanes, 3);
+                                    break;
+                            }
+
+                            scene.beginAnimation(packetClone, 0, this.pathPointCount, true);
+
+                            objects.push(packetClone, packetMat);
+
+                        }, ranTime);
+                    })(packet, this.babylonObjects);
+                }
+            }.bind(this));
+
+            this.babylonObjects.push(packetSphere);
         }
     }
 };
