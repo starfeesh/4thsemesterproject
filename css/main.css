@@ -1,0 +1,169 @@
+html, body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#renderCanvas {
+    width: 100vw;
+    height: 100vh;
+    touch-action: none;
+}
+#hud {
+    opacity: 0;
+}
+#bordertop {
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+}
+#borderbtm {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.fadeIn {
+    animation: fadeInAnim 0.5s 1 linear forwards;
+}
+@keyframes fadeInAnim {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.fadeOut {
+    animation: fadeOutAnim 0.5s 1 linear forwards;
+}
+@keyframes fadeOutAnim {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+.navContainer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20%;
+    margin-top: 10%;
+}
+.container {
+    float: right;
+}
+#home {
+    transform-origin: 100% 50%;
+}
+#prioritization {
+    margin-top: 2%;
+    transform-origin: 100% 50%;
+}
+#mimic {
+    margin-top: 50%;
+    transform-origin: 100% 50%;
+}
+#home img, #prioritization img, #mimicButton {
+    margin-right: -20px;
+    max-width: 100%;
+
+}
+#home img:hover, #prioritization img:hover, #mimicButton:hover{
+    animation: slideOut 0.1s 1 linear forwards;
+}
+#flare {
+    position: absolute;
+    right: 0;
+    animation: foil 1s infinite linear;
+    display: none;
+}
+@keyframes slideOut {
+    from {
+        margin-right: -20px;
+    }
+    to {
+        margin-right: 0;
+    }
+}
+@keyframes foil {
+    from {
+        margin-right: -40px;
+        opacity: 1;
+    }
+    to {
+        margin-right: 250px;
+        opacity: 0;
+    }
+}
+
+.chart {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    width: 10%;
+}
+
+li {
+    position:relative;
+    display:table-cell;
+    padding: 0.3em;
+    vertical-align:bottom;
+    height:100px;
+    opacity:0.5;
+}
+li:nth-child(1) span {
+    background-color: green;
+    animation: drawGreen 1s ease-in-out infinite;
+}
+li:nth-child(2) span {
+    background-color: yellow;
+    animation: drawYellow 1s ease-in-out infinite;
+}
+li:nth-child(3) span {
+    background-color: red;
+    animation: drawRed 1s ease-in-out infinite;
+}
+span {
+    display: block;
+    width: 25px;
+    height: 100%;
+}
+@keyframes drawGreen{
+    0%{
+        height:50%;
+    }
+    50%{
+        height:40%;
+    }
+    100%{
+        height:50%;
+    }
+}
+@keyframes drawYellow{
+    0%{
+        height:40%;
+    }
+    50%{
+        height:60%;
+    }
+    100%{
+        height:40%;
+    }
+}
+@keyframes drawRed{
+    0%{
+        height:40%;
+    }
+    50%{
+        height:50%;
+    }
+    100%{
+        height:40%;
+    }
+}

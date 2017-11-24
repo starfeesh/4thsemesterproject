@@ -3,20 +3,34 @@ class AnimationManager {
         var movementAnim = new BABYLON.Animation("cameraFlyThrough", "position", 10, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
             BABYLON.ANIMATIONLOOPMODE_CONSTANT);
 
-        var keys = [
+        var movementKeys = [
             { frame: 0, value: new BABYLON.Vector3(119, 8, -710) },
-            { frame: 25, value: new BABYLON.Vector3(119, 8, -755) },
-            { frame: 50, value: new BABYLON.Vector3(180, 8, -755) },
-            { frame: 75, value: new BABYLON.Vector3(180, 8, -814) },
-            { frame: 100, value: new BABYLON.Vector3(119, 8, -814) },
-            { frame: 125, value: new BABYLON.Vector3(119, 8, -873) },
-            { frame: 150, value: new BABYLON.Vector3(101, 8, -873) },
-            { frame: 175, value: new BABYLON.Vector3(101, 30, -873) }
+            { frame: 50, value: new BABYLON.Vector3(119, 8, -873) },
+            { frame: 75, value: new BABYLON.Vector3(101, 8, -873) },
+            { frame: 100, value: new BABYLON.Vector3(101, 30, -873) },
+            { frame: 110, value: new BABYLON.Vector3(101, 30, -895) }
         ];
-        movementAnim.setKeys(keys);
-        cameraParent.animations.push(movementAnim);
+        movementAnim.setKeys(movementKeys);
 
-        return movementAnim;
+        var turningAnim = new BABYLON.Animation("turningFlyThrough", "rotation.y", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+
+        var turningKeys = [
+            { frame: 0, value: 0 },
+            { frame: 50, value: 0 },
+            { frame: 55, value: 1.5708 },
+            { frame: 75, value: 1.5708 },
+            { frame: 80, value: 0 },
+            { frame: 105, value: 0 },
+            { frame: 110, value: 3.14 }
+        ];
+        turningAnim.setKeys(turningKeys);
+
+        cameraParent.animations.push(movementAnim, turningAnim);
+
+        var anims = [movementAnim, turningAnim];
+
+        return anims;
     }
     moveNormalPacket(packetSphere, lanes) {
         var packetFlow = new BABYLON.Animation("packetFlow", "position", 5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
@@ -46,5 +60,30 @@ class AnimationManager {
 
         mimicPacketFlow.setKeys(mimicKeysFlow);
         packetSphere.animations.push(mimicPacketFlow);
+    }
+    moveTopDownCamera(camera) {
+        var camMovementAnim = new BABYLON.Animation("camMove", "position", 3, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var camMovementKeys = [
+            { frame: 0, value: new BABYLON.Vector3(102, 40, -888) },
+            { frame: 12, value: new BABYLON.Vector3(450, 10, -888) },
+            { frame: 25, value: new BABYLON.Vector3(600, 10, -888) }
+        ];
+
+        camMovementAnim.setKeys(camMovementKeys);
+        camera.animations.push(camMovementAnim);
+
+        return camMovementAnim;
+    }
+    pointTopDownCamera(camera, lookAtPath) {
+        var camTargetAnim = new BABYLON.Animation("camTarget", "target", 1.5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var camTargetKeys = [];
+        for (var j = 0; j < lookAtPath.length - 25; j++){
+            camTargetKeys.push( { frame: j, value: new BABYLON.Vector3(lookAtPath[j].x, lookAtPath[j].y - 50, lookAtPath[j].z) } );
+        }
+
+        camTargetAnim.setKeys(camTargetKeys);
+        camera.animations.push(camTargetAnim);
+
+        return camTargetAnim;
     }
 }
