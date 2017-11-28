@@ -4,7 +4,7 @@ class AnimationManager {
             BABYLON.ANIMATIONLOOPMODE_CONSTANT);
 
         var movementKeys = [
-            { frame: 0, value: new BABYLON.Vector3(119, 8, -710) },
+            { frame: 0, value: new BABYLON.Vector3(119, 8, -610) },
             { frame: 50, value: new BABYLON.Vector3(119, 8, -873) },
             { frame: 75, value: new BABYLON.Vector3(101, 8, -873) },
             { frame: 100, value: new BABYLON.Vector3(101, 30, -873) },
@@ -62,28 +62,35 @@ class AnimationManager {
         packetSphere.animations.push(mimicPacketFlow);
     }
     moveTopDownCamera(camera) {
-        var camMovementAnim = new BABYLON.Animation("camMove", "position", 3, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
-        var camMovementKeys = [
-            { frame: 0, value: new BABYLON.Vector3(102, 40, -888) },
-            { frame: 12, value: new BABYLON.Vector3(450, 10, -888) },
-            { frame: 25, value: new BABYLON.Vector3(600, 10, -888) }
-        ];
+        var camMovementAnim = new BABYLON.Animation("camMove", "position", 8, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
 
+        var firstQuadraticBezierVectors = BABYLON.Curve3.CreateQuadraticBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(650, 40, -444), new BABYLON.Vector3( 800, 40, 0), 90);
+        var secondQuadraticBezierVectors = BABYLON.Curve3.CreateQuadraticBezier(new BABYLON.Vector3(800, 40, 0), new BABYLON.Vector3(650, 40, 444), new BABYLON.Vector3( 102, 40, 898), 90);
+        var thirdQuadraticBezierVectors = BABYLON.Curve3.CreateQuadraticBezier(new BABYLON.Vector3(102, 40, 898), new BABYLON.Vector3(-650, 40, 444), new BABYLON.Vector3( -800, 40, 0), 90);
+        var fourthQuadraticBezierVectors = BABYLON.Curve3.CreateQuadraticBezier(new BABYLON.Vector3(-800, 40, 0), new BABYLON.Vector3(-650, 40, -444), new BABYLON.Vector3( 102, 40, -898), 90);
+
+        var circle = firstQuadraticBezierVectors.continue(secondQuadraticBezierVectors).continue(thirdQuadraticBezierVectors).continue(fourthQuadraticBezierVectors);
+        var path = circle.getPoints();
+
+        var camMovementKeys = [];
+        for (var i = 0; i < 360; i++) {
+            camMovementKeys.push({ frame: i, value: path[i] });
+        }
         camMovementAnim.setKeys(camMovementKeys);
         camera.animations.push(camMovementAnim);
 
         return camMovementAnim;
     }
-    pointTopDownCamera(camera, lookAtPath) {
-        var camTargetAnim = new BABYLON.Animation("camTarget", "target", 1.5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
-        var camTargetKeys = [];
-        for (var j = 0; j < lookAtPath.length - 25; j++){
-            camTargetKeys.push( { frame: j, value: new BABYLON.Vector3(lookAtPath[j].x, lookAtPath[j].y - 50, lookAtPath[j].z) } );
+    pointTopDownCamera(objToFollow, lookAtPath) {
+        var targetAnim = new BABYLON.Animation("targetPos", "position", 8, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var targetKeys = [];
+        for (var j = 0; j < lookAtPath.length; j++){
+            targetKeys.push( { frame: j, value: new BABYLON.Vector3(lookAtPath[j].x, lookAtPath[j].y, lookAtPath[j].z) } );
         }
 
-        camTargetAnim.setKeys(camTargetKeys);
-        camera.animations.push(camTargetAnim);
+        targetAnim.setKeys(targetKeys);
+        objToFollow.animations.push(targetAnim);
 
-        return camTargetAnim;
+        return targetAnim;
     }
 }

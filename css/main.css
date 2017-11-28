@@ -14,6 +14,11 @@ html, body {
 #hud {
     opacity: 0;
 }
+#border {
+    position: fixed;
+    transform-origin: 50% 50%;
+    z-index: 99;
+}
 #bordertop {
     position: absolute;
     top:0;
@@ -70,12 +75,17 @@ html, body {
     transform-origin: 100% 50%;
 }
 #home img, #prioritization img, #mimicButton {
-    margin-right: -20px;
+    -webkit-transform: translate(5px, 0);
+    -moz-transform: translate(5px, 0);
+    -ms-transform: translate(5px, 0);
+    -o-transform: translate(5px, 0);
+    transform: translate(5px, 0);
     max-width: 100%;
 
 }
 #home img:hover, #prioritization img:hover, #mimicButton:hover{
     animation: slideOut 0.1s 1 linear forwards;
+
 }
 #flare {
     position: absolute;
@@ -85,23 +95,20 @@ html, body {
 }
 @keyframes slideOut {
     from {
-        margin-right: -20px;
+        -webkit-transform: translate(5px, 0);
+        -moz-transform: translate(5px, 0);
+        -ms-transform: translate(5px, 0);
+        -o-transform: translate(5px, 0);
+        transform: translate(5px, 0);
     }
     to {
-        margin-right: 0;
+        -webkit-transform: translate(0, 0);
+        -moz-transform: translate(0, 0);
+        -ms-transform: translate(0, 0);
+        -o-transform: translate(0, 0);
+        transform: translate(0, 0);
     }
 }
-@keyframes foil {
-    from {
-        margin-right: -40px;
-        opacity: 1;
-    }
-    to {
-        margin-right: 250px;
-        opacity: 0;
-    }
-}
-
 .chart {
     position: absolute;
     bottom: 25px;
