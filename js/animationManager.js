@@ -1,4 +1,40 @@
 class AnimationManager {
+    resetRotation() {
+        var alphaAnim 	= new BABYLON.Animation ("alphaAnim", "alpha", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+        var betaAnim 	= new BABYLON.Animation ("betaAnim", "beta", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+        var radiusAnim = new BABYLON.Animation("zoomanim", "radius", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+
+        var alphaKeys 	= [{frame: 0, value: scene.activeCamera.alpha}, {frame: 25, value: 4.6}];
+        var betaKeys 	= [{frame: 0, value: scene.activeCamera.beta},  {frame: 25, value: 0.75}];
+        var radiusKeys 	= [{frame: 0, value: scene.activeCamera.radius},  {frame: 20, value: 5}];
+        alphaAnim.setKeys(alphaKeys);
+        betaAnim.setKeys(betaKeys);
+        radiusAnim.setKeys(radiusKeys);
+
+        scene.activeCamera.animations.push(alphaAnim);
+        scene.activeCamera.animations.push(betaAnim);
+        scene.activeCamera.animations.push(radiusAnim);
+
+        var anims = [];
+        anims.push(alphaAnim, betaAnim, radiusAnim);
+        return anims;
+
+    }
+    zoomGlobe(globeCamera) {
+
+        var current = globeCamera.radius;
+        var keys = [];
+        keys.push({
+            frame: 0,
+            value: current
+        });
+        keys.push({
+            frame: 25,
+            value: 5
+        });
+        animation.setKeys(keys);
+        globeCamera.animations.push(animation);
+    }
     cameraFlyThrough(cameraParent) {
         var movementAnim = new BABYLON.Animation("cameraFlyThrough", "position", 10, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
             BABYLON.ANIMATIONLOOPMODE_CONSTANT);
@@ -92,5 +128,32 @@ class AnimationManager {
         objToFollow.animations.push(targetAnim);
 
         return targetAnim;
+    }
+    fadePackets(clone, start, end) {
+
+        var fadeAnim = new BABYLON.Animation("fadeAnim", "visibility", 5, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
+        var fadeKeys = [
+            { frame: 0, value: start },
+            { frame: 25, value: end }
+        ];
+
+        fadeAnim.setKeys(fadeKeys);
+        clone.animations.push(fadeAnim);
+
+        return fadeAnim;
+    }
+    moveTopDownPlacedPackets(packet, radius, path) {
+        var placedPacketAnim = new BABYLON.Animation("placedPacketAnim", "position", 8, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var placedPacketKeys = [];
+
+
+        for (var i = 0; i < path.length; i++){
+            placedPacketKeys.push({ frame: i, value: new BABYLON.Vector3(Math.sin(i) * radius + path[i].x, Math.sin(i) * radius + path[i].y, Math.sin(i) * radius + path[i].z) })
+        }
+
+        placedPacketAnim.setKeys(placedPacketKeys);
+        packet.animations.push(placedPacketAnim);
+
+        return placedPacketAnim;
     }
 }

@@ -30,7 +30,7 @@ class ParticleManager {
         ps.maxLifeTime = Infinity;
         ps.emitter = emitter;
 
-        ps.emitRate = 100;
+        ps.emitRate = 75;
         ps.updateSpeed = 0.001;
         ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
 
@@ -38,8 +38,6 @@ class ParticleManager {
         ps.color2 = color2;
         ps.colorDead = colorDead;
 
-        // console.log("path after pass ");
-        // console.log(path);
 
         ps.updateFunction = function (particles) {
             for (var index = 0; index < particles.length; index++) {
