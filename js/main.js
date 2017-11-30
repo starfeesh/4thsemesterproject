@@ -1,5 +1,6 @@
 var canvas, engine, scene, camera, light;
-var stateManager,
+var loadingScreen,
+    stateManager,
     animManager,
     inputHandler,
     uIHandler,
@@ -131,17 +132,129 @@ class Stage {
     }
 }
 class LoadingScreen {
-    constructor(color) {
+    constructor() {
         this.loadedObjects = [];
+
     }
     displayLoadingUI() {
         var loadingContainer = document.querySelector("#loading");
+        if (loadingContainer.classList.contains("loadingFadeOut")) {
+            loadingContainer.classList.remove("loadingFadeOut");
+            loadingContainer.style.display = "block";
+            loadingContainer.classList.add("loadingFadeIn");
+        }
+
         var mimicText = new Image();
+        mimicText.style.display = "none";
+        mimicText.onload = function () {
+            var w = (window.innerWidth / 2) - (mimicText.width / 2);
+            var h = (window.innerHeight / 2) - (mimicText.height / 2);
+            mimicText.id = "mimicText";
+            mimicText.style.position = "absolute";
+            mimicText.style.top = h + "px";
+            mimicText.style.left = w + "px";
+            mimicText.style.display = "block";
+
+            this.createGreenPackets(loadingContainer, w, h);
+            this.createYellowPackets(loadingContainer, w, h);
+            this.createRedPackets(loadingContainer, w, h);
+        }.bind(this);
+        loadingContainer.appendChild(mimicText);
+        mimicText.src = "img/loadingscreen/mimic.png";
 
 
-        this.loadedObjects.push(bg)
+        this.loadedObjects.push(mimicText);
+        this.hideLoadingUI();
+    }
+    createGreenPackets(container, width, height) {
+        for (var i = 0; i < 6; i++) {
+            var packetImg = new Image();
+            (function (img, parent, index) {
+                img.onload = function () {
+                    img.className = "packet";
+                    img.style.position = "absolute";
+                    img.style.top = height + 20 + "px";
+                    img.style.left = "-20px";
+                };
+                parent.appendChild(img);
+                var ranTime = Math.round(Math.random() * (3000 - 1000)) + 1000;
+                setTimeout(function () {
+                    img.classList.add("animatePacket");
+                    img.style.animationDuration = ranTime / 1000 + 1 + "s"
+                }, ranTime);
+                img.src = "img/loadingscreen/green.png";
+            })(packetImg, container, i);
+            this.loadedObjects.push(packetImg);
+
+        }
+    }
+    createYellowPackets(container, width, height) {
+        for (var i = 0; i < 5; i++) {
+            var packetImg = new Image();
+            (function (img, parent, index) {
+                img.onload = function () {
+                    img.className = "packet";
+                    img.style.position = "absolute";
+                    img.style.top = height + "px";
+                    img.style.left = "-20px";
+                };
+                parent.appendChild(img);
+                var ranTime = Math.round(Math.random() * (5000 - 3000)) + 3000;
+                setTimeout(function () {
+                    img.classList.add("animatePacket");
+                    img.style.animationDuration = ranTime / 1000 + 1 + "s"
+                }, ranTime);
+                img.src = "img/loadingscreen/yellow.png";
+            })(packetImg, container, i);
+            this.loadedObjects.push(packetImg);
+        }
+    }
+    createRedPackets(container, width, height) {
+        for (var i = 0; i < 5; i++) {
+            var packetImg = new Image();
+            (function (img, parent, index) {
+                img.onload = function () {
+                    img.className = "packet";
+                    img.style.position = "absolute";
+                    img.style.top = height - 20 + "px";
+                    img.style.left = "-20px";
+                };
+                parent.appendChild(img);
+                var ranTime = Math.round(Math.random() * (8000 - 5000)) + 5000;
+                setTimeout(function () {
+                    img.classList.add("animatePacket");
+                    img.style.animationDuration = ranTime / 1000 + 1 + "s"
+                }, ranTime);
+                img.src = "img/loadingscreen/red.png";
+            })(packetImg, container, i);
+            this.loadedObjects.push(packetImg);
+        }
     }
     hideLoadingUI() {
+        var loadingContainer = document.querySelector("#loading");
+        setTimeout(function () {
+            if (loadingContainer.classList.contains("loadingFadeIn")) {
+                loadingContainer.classList.remove("loadingFadeIn");
+                loadingContainer.classList.add("loadingFadeOut");
+            }
+            else {
+                loadingContainer.classList.add("loadingFadeOut");
+            }
+        }.bind(this), 5000);
+
+
+
+        loadingContainer.addEventListener("animationend", function () {
+            if (loadingContainer.classList.contains("loadingFadeOut")) {
+                loadingContainer.style.display = "none";
+                for (var i = this.loadedObjects.length - 1; i >= 0; i--) {
+                    if (this.loadedObjects[i] !== null) {
+                        this.loadedObjects[i].parentNode.removeChild(this.loadedObjects[i]);
+                        this.loadedObjects.splice(i, 1);
+                    }
+                }
+            }
+        }.bind(this))
 
     }
 }
@@ -189,6 +302,7 @@ const dynamicClassMap = {
             camera.setPosition(new BABYLON.Vector3(-100, 100, -100));
             scene.activeCamera = camera;
             var loader = new BABYLON.AssetsManager(scene);
+            //loader.useDefaultLoadingScreen = false;
             var globe = loader.addMeshTask("globe", "", "models/", "globe7.babylon");
             var innerGlobe = loader.addMeshTask("outer", "", "models/", "inner.babylon");
             var highlight = new BABYLON.HighlightLayer("hl", scene);
@@ -354,6 +468,7 @@ const dynamicClassMap = {
             ground.material = groundMat;
 
             var loader = new BABYLON.AssetsManager(scene);
+            //loader.useDefaultLoadingScreen = false;
             var city = loader.addMeshTask("city", "", "models/", "city6.babylon");
             //var highlight = new BABYLON.HighlightLayer("hl", scene);
 
@@ -897,8 +1012,13 @@ const dynamicClassMap = {
             super();
 
             this.packets = jsonHandler.resources[2].json.packets;
+            this.clones = [];
             this.cloneAnims = [];
             this.spawnerEnabled = true;
+            this.placedPackets = [];
+            this.packetUIWithLinks = [];
+            this.packetUIWithoutLinks = [];
+            this.packetInfoIsOpen = false;
         }
         setUp() {
             if (debugMode) {
@@ -1014,6 +1134,7 @@ const dynamicClassMap = {
                 }
                 var animatable = scene.beginAnimation(packetClone, 0, this.pathPointCount, true);
 
+                this.clones.push(packetClone);
                 this.cloneAnims.push(animatable);
                 this.babylonObjects.push(packetClone, packetMat);
             }
@@ -1046,9 +1167,15 @@ const dynamicClassMap = {
             var anim = animManager.pointTopDownCamera(dummy, path);
             var animatable = scene.beginAnimation(dummy, 0, path.length, false);
 
+            var placedPacketSpawnPoint = new BABYLON.AnimationEvent(60, function () {
+                this.createGreenPacket();
+            }.bind(this));
+            movementAnim.addEvent(placedPacketSpawnPoint);
+
             scene.onBeforeRenderObservable.add(function () {
                 cam.setTarget(dummy.position);
             });
+
             this.allAnims.push(movementAnimatable, animatable);
 
             var quarterPausePoint = new BABYLON.AnimationEvent(90, function () {
@@ -1058,8 +1185,21 @@ const dynamicClassMap = {
                 this.allAnims.forEach(function (animatable) {
                     this.pauseAndShowInfo(animatable);
                 }.bind(this));
+                this.clones.forEach(function (clone) {
+                    var anim = animManager.fadePackets(clone, 1, 0.2);
+                    scene.beginDirectAnimation(clone, [anim], 0, 25, false);
+                })
+
             }.bind(this));
             movementAnim.addEvent(quarterPausePoint);
+
+            var fadeInPoint = new BABYLON.AnimationEvent(91, function () {
+                this.clones.forEach(function (clone) {
+                    var anim = animManager.fadePackets(clone, 0.2, 1);
+                    scene.beginDirectAnimation(clone, [anim], 0, 25, false);
+                })
+            }.bind(this));
+            movementAnim.addEvent(fadeInPoint);
 
             var halfPausePoint = new BABYLON.AnimationEvent(180, function () {
                 movementAnimatable.speedRatio = 3;
@@ -1080,11 +1220,291 @@ const dynamicClassMap = {
                 inputHandler.attachDOMListener(border, continueFunction);
             }
         }
-        startAndHideInfo(border, anim) {
+        createGreenPacket() {
+            var green = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(102, 400, -444), new BABYLON.Vector3(102, 400, 444), new BABYLON.Vector3(102, 40, 898), 180);
+            var greenPath = green.getPoints();
+
+            var packetSphere = new BABYLON.Mesh.CreateSphere("packet", 6, 12, scene);
+            packetSphere.position = new BABYLON.Vector3(102, 15, -888);
+            var packetMat = new BABYLON.StandardMaterial("packetMat", scene);
+
+            packetMat.diffuseColor = new BABYLON.Color3.FromHexString("#00A32E");
+            packetMat.emissiveColor = new BABYLON.Color3.FromHexString("#22b14c");
+            packetSphere.material = packetMat;
+
+            packetSphere.clicked = false;
+            packetSphere.application = "Voice call";
+            packetSphere.destination = "Skype";
+            packetSphere.scheduling = "Low-latency priority";
+            packetSphere.bandwidth = "Assured 90kb/s";
+
+            var radius = 0;
+            var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, greenPath);
+            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+                packetSphere.dispose();
+            });
+
+            var yellowSpawnPoint = new BABYLON.AnimationEvent(20, function () {
+                this.createYellowPacket();
+            }.bind(this));
+            anim.addEvent(yellowSpawnPoint);
+
+            var greenPausePoint = new BABYLON.AnimationEvent(100, function () {
+                animatable.pause();
+                this.allAnims.push(animatable);
+                packetSphere.actionManager = new BABYLON.ActionManager(scene);
+                var click = function () {
+                    if (this.packetInfoIsOpen) {
+                        this.destroyPacketUI();
+                        this.packetInfoIsOpen = false;
+                        this.showPacketUI(packetSphere);
+                    } else {
+                        this.showPacketUI(packetSphere)
+                    }
+                }.bind(this);
+                inputHandler.attachUIListener(packetSphere, click);
+            }.bind(this));
+            anim.addEvent(greenPausePoint);
+
+            this.placedPackets.push(packetSphere);
+            this.babylonObjects.push(green, packetSphere, packetMat);
+        }
+        createYellowPacket() {
+            var yellow = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(102, 370, -644), new BABYLON.Vector3(102, 370, 644), new BABYLON.Vector3(102, 40, 898), 180);
+            var yellowPath = yellow.getPoints();
+
+            var packetSphere = new BABYLON.Mesh.CreateSphere("packet", 6, 12, scene);
+            packetSphere.position = new BABYLON.Vector3(102, 15, -878);
+            var packetMat = new BABYLON.StandardMaterial("packetMat", scene);
+
+            packetMat.diffuseColor = new BABYLON.Color3.FromHexString("#A3A300");
+            packetMat.emissiveColor = new BABYLON.Color3.FromHexString("#fff200");
+            packetSphere.material = packetMat;
+
+            packetSphere.clicked = false;
+            packetSphere.application = "Web";
+            packetSphere.destination = "Dropbox";
+            packetSphere.scheduling = "---";
+            packetSphere.bandwidth = "---";
+
+            var radius = 10;
+            var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, yellowPath);
+            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+                packetSphere.dispose();
+            });
+
+            var redSpawnPoint = new BABYLON.AnimationEvent(20, function () {
+                this.createRedPacket();
+            }.bind(this));
+            anim.addEvent(redSpawnPoint);
+
+            var yellowPausePoint = new BABYLON.AnimationEvent(90, function () {
+                animatable.pause();
+                this.allAnims.push(animatable);
+                packetSphere.actionManager = new BABYLON.ActionManager(scene);
+                var click = function () {
+                    if (this.packetInfoIsOpen) {
+                        this.destroyPacketUI();
+                        this.packetInfoIsOpen = false;
+                        this.showPacketUI(packetSphere);
+                    }
+                    else {
+                        this.showPacketUI(packetSphere)
+                    }
+                }.bind(this);
+                inputHandler.attachUIListener(packetSphere, click);
+            }.bind(this));
+            anim.addEvent(yellowPausePoint);
+
+            this.placedPackets.push(packetSphere);
+            this.babylonObjects.push(yellow, packetSphere, packetMat);
+
+        }
+        createRedPacket() {
+            var red = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(102, 345, -444), new BABYLON.Vector3(102, 345, 444), new BABYLON.Vector3(102, 40, 898), 180);
+            var redPath = red.getPoints();
+
+            var packetSphere = new BABYLON.Mesh.CreateSphere("packet", 6, 12, scene);
+            packetSphere.position = new BABYLON.Vector3(102, 15, -888);
+            var packetMat = new BABYLON.StandardMaterial("packetMat", scene);
+
+            packetMat.diffuseColor = new BABYLON.Color3.FromHexString("#99000B");
+            packetMat.emissiveColor = new BABYLON.Color3.FromHexString("#ed1c24");
+            packetSphere.material = packetMat;
+
+            packetSphere.clicked = false;
+            packetSphere.application = "Web";
+            packetSphere.destination = "Spotify";
+            packetSphere.scheduling = "---";
+            packetSphere.bandwidth = "---";
+
+            var radius = 20;
+            var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, redPath);
+            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+                packetSphere.dispose();
+            });
+
+            var redPausePoint = new BABYLON.AnimationEvent(80, function () {
+                animatable.pause();
+                this.allAnims.push(animatable);
+                packetSphere.actionManager = new BABYLON.ActionManager(scene);
+                var click = function () {
+                    if (this.packetInfoIsOpen) {
+                        this.destroyPacketUI();
+                        this.packetInfoIsOpen = false;
+                        this.showPacketUI(packetSphere);
+                    }
+                    else {
+                        this.showPacketUI(packetSphere)
+                    }
+                }.bind(this);
+                inputHandler.attachUIListener(packetSphere, click);
+            }.bind(this));
+            anim.addEvent(redPausePoint);
+
+            this.placedPackets.push(packetSphere);
+            this.babylonObjects.push(red, packetSphere, packetMat);
+
+        }
+        showPacketUI(packet) {
+            if (!packet.clicked) {
+                if (!this.packetInfoIsOpen) {
+                    this.packetInfoIsOpen = true;
+                    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+                    var textBox = new BABYLON.GUI.Rectangle();
+                    textBox.width = "260px";
+                    textBox.height = "120px";
+                    textBox.cornerRadius = 10;
+                    textBox.color = "#47b92d";
+                    textBox.thickness = 2;
+                    textBox.background = "transparent";
+                    advancedTexture.addControl(textBox);
+                    textBox.linkWithMesh(packet);
+                    textBox.linkOffsetY = -200;
+
+                    var textBG = new BABYLON.GUI.Rectangle();
+                    textBG.width = "260px";
+                    textBG.height = "120px";
+                    textBG.cornerRadius = 10;
+                    textBG.thickness = 0;
+                    textBG.background = "#499b12";
+                    textBG.alpha = 0.25;
+                    advancedTexture.addControl(textBG);
+                    textBG.linkWithMesh(packet);
+                    textBG.linkOffsetY = -200;
+
+                    var label = new BABYLON.GUI.TextBlock();
+                    label.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                    label.text = "Packet details";
+                    label.color = "#47b92d";
+                    label.width = "12%";
+                    label.top = "-25px";
+                    advancedTexture.addControl(label);
+                    label.linkWithMesh(packet);
+                    label.linkOffsetY = -255;
+
+                    var text1 = new BABYLON.GUI.TextBlock();
+                    text1.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                    text1.text = "Application: " + packet.application;
+                    text1.color = "#47b92d";
+                    text1.fontSize = "16px";
+                    text1.top = "-30px";
+                    text1.paddingLeft = "10px";
+                    textBox.addControl(text1);
+
+                    var text2 = new BABYLON.GUI.TextBlock();
+                    text2.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                    text2.text = "Destination: " + packet.destination;
+                    text2.color = "#47b92d";
+                    text2.fontSize = "16px";
+                    text2.top = "-10px";
+                    text2.paddingLeft = "10px";
+                    textBox.addControl(text2);
+
+                    var text3 = new BABYLON.GUI.TextBlock();
+                    text3.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                    text3.text = "Scheduling: " + packet.scheduling;
+                    text3.color = "#47b92d";
+                    text3.fontSize = "16px";
+                    text3.top = "10px";
+                    text3.paddingLeft = "10px";
+                    textBox.addControl(text3);
+
+                    var text4 = new BABYLON.GUI.TextBlock();
+                    text4.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                    text4.text = "Bandwidth: " + packet.bandwidth;
+                    text4.color = "#47b92d";
+                    text4.fontSize = "16px";
+                    text4.top = "30px";
+                    text4.paddingLeft = "10px";
+                    textBox.addControl(text4);
+
+                    var target = new BABYLON.GUI.Ellipse();
+                    target.width = "40px";
+                    target.height = "40px";
+                    target.color = "#47b92d";
+                    target.thickness = 2;
+                    target.background = "transparent";
+                    advancedTexture.addControl(target);
+                    target.linkWithMesh(packet);
+
+                    var targetBG = new BABYLON.GUI.Ellipse();
+                    targetBG.width = "40px";
+                    targetBG.height = "40px";
+                    targetBG.thickness = 0;
+                    targetBG.background = "#47b92d";
+                    targetBG.alpha = 0.25;
+                    advancedTexture.addControl(targetBG);
+                    targetBG.linkWithMesh(packet);
+
+                    var line = new BABYLON.GUI.Line();
+                    line.lineWidth = 2;
+                    line.color = "#47b92d";
+                    line.y2 = 60;
+                    line.linkOffsetY = -20;
+                    advancedTexture.addControl(line);
+                    line.linkWithMesh(packet);
+                    line.connectedControl = textBox;
+
+                    this.packetUIWithLinks.push(textBox, textBG, label, target, targetBG, line);
+                    this.packetUIWithoutLinks.push(text1, text2, text3, text4);
+
+                    this.babylonObjects.push(advancedTexture, textBox, textBG, text1, target, targetBG, line, this.packetUIWithLinks, packet);
+                }
+                packet.clicked = true;
+            }
+        }
+        destroyPacketUI() {
+            this.packetUIWithLinks.forEach(function (element) {
+                element.linkWithMesh(null);
+                element.dispose();
+                element = null;
+                this.packetUIWithLinks = [];
+            }.bind(this));
+            this.packetUIWithoutLinks.forEach(function (element) {
+                element.dispose();
+                element = null;
+                this.packetUIWithoutLinks = [];
+            }.bind(this));
+            this.placedPackets.forEach(function (packet) {
+                packet.clicked = false;
+            })
+        }
+        startAndHideInfo() {
             this.allAnims.forEach(function (animatable) {
                 animatable.restart();
             });
-            infoHandler.hideInfo(border);
+            this.packetUIWithLinks.forEach(function (element) {
+                element.linkWithMesh(null);
+                element.dispose();
+                element = null;
+            }.bind(this));
+            this.packetUIWithoutLinks.forEach(function (element) {
+                element.dispose();
+                element = null;
+            });
+            infoHandler.hideInfo();
         }
     }
 };
@@ -1257,12 +1677,12 @@ var debugMode = true;
 
 
 document.addEventListener('DOMContentLoaded', function () {
+    loadingScreen = new LoadingScreen();
     if (BABYLON.Engine.isSupported){
         canvas = document.getElementById("renderCanvas");
         engine = new BABYLON.Engine(canvas, true);
-        //var loadingScreen = new LoadingScreen("");
-        //loadingScreen.loadingUIBackgroundColor = new BABYLON.Color3.FromHexString("#FF0000");
-        //engine.loadingScreen = loadingScreen;
+        engine.loadingScreen = loadingScreen;
+
         animManager = new AnimationManager();
         inputHandler = new InputHandler();
         uIHandler = new UIHandler();

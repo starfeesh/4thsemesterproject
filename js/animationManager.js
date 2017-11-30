@@ -156,4 +156,18 @@ class AnimationManager {
 
         return placedPacketAnim;
     }
+    moveTopDownMimicPlacedPackets(packet, offset, path) {
+        var placedPacketAnim = new BABYLON.Animation("placedPacketAnim", "position", 8, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var placedPacketKeys = [];
+
+
+        for (var i = 0; i < path.length; i++){
+            placedPacketKeys.push({ frame: i, value: new BABYLON.Vector3(path[i].x, path[i].y + offset, path[i].z) })
+        }
+
+        placedPacketAnim.setKeys(placedPacketKeys);
+        packet.animations.push(placedPacketAnim);
+
+        return placedPacketAnim;
+    }
 }
