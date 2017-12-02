@@ -78,7 +78,7 @@ class AnimationManager {
 
         var keysFlow = [];
         for (var i = 0; i < lane.length; i++) {
-            keysFlow.push({ frame: i, value: new BABYLON.Vector3(Math.sin(i) * radius + lane[i].x + ranOffset, Math.sin(i) * radius + lane[i].y + ranOffset, Math.sin(i) * radius + lane[i].z + ranOffset) });
+            keysFlow.push({ frame: i, value: new BABYLON.Vector3(Math.sin(i) * 15 + lane[i].x + ranOffset, Math.sin(i) * radius + lane[i].y + ranOffset, Math.sin(i) * radius + lane[i].z + ranOffset) });
         }
         packetFlow.setKeys(keysFlow);
         packetSphere.animations.push(packetFlow);
@@ -169,5 +169,33 @@ class AnimationManager {
         packet.animations.push(placedPacketAnim);
 
         return placedPacketAnim;
+    }
+    moveWipeoutCamera(camera, height) {
+        var camMovementAnim = new BABYLON.Animation("camMove", "position", 4, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+
+        var cubicBezierVectors = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(140, 600, -444), new BABYLON.Vector3(140, 600, 444), new BABYLON.Vector3( 102, 40, 898), 140);
+        var path = cubicBezierVectors.getPoints();
+        var movementKeys = [];
+
+        for (var i = 0; i < path.length; i++) {
+            movementKeys.push({ frame: i + 50, value: new BABYLON.Vector3(path[i].x, path[i].y + height, path[i].z) });
+        }
+
+        camMovementAnim.setKeys(movementKeys);
+        camera.animations.push(camMovementAnim);
+
+        return camMovementAnim;
+    }
+    pointWipeoutCamera(objToFollow, lookAtPath) {
+        var targetAnim = new BABYLON.Animation("targetPos", "position", 4, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.ANIMATIONLOOPMODE_CONSTANT);
+        var targetKeys = [];
+        for (var j = 0; j < lookAtPath.length; j++){
+            targetKeys.push( { frame: j, value: new BABYLON.Vector3(lookAtPath[j].x, lookAtPath[j].y, lookAtPath[j].z) } );
+        }
+
+        targetAnim.setKeys(targetKeys);
+        objToFollow.animations.push(targetAnim);
+
+        return targetAnim;
     }
 }

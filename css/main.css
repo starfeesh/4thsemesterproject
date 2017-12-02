@@ -53,7 +53,7 @@ html, body {
     position: absolute;
     width: 15px;
     height: 15px;
-    z-index: 101;
+    left: -200px;
 }
 .animatePacket {
     animation: packetAnim 8s infinite linear;
@@ -139,15 +139,30 @@ html, body {
     max-width: 100%;
 
 }
-#home img:hover, #prioritization img:hover, #mimicButton:hover{
+#home img:hover, #prioritization img:hover {
     animation: slideOut 0.1s 1 linear forwards;
 
 }
+.mimic-hover {
+    background-color: transparent;
+}
+.mimic-hover:hover {
+    animation: slideOut 0.1s 1 linear forwards;
+}
 #flare {
-    position: absolute;
+    position: fixed;
     right: 0;
     animation: foil 1s infinite linear;
-    display: none;
+}
+@keyframes foil {
+    from {
+        margin-right: -40px;
+        opacity: 1;
+    }
+    to {
+        margin-right: 250px;
+        opacity: 0;
+    }
 }
 @keyframes slideOut {
     from {
