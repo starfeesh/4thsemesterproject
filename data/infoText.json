@@ -1,0 +1,43 @@
+{
+  "opener":
+  {
+    "text": "This is the MiMiC network. Data is transferred between points of presence around the globe and achieves resilience through being located worldwide. This is a visualization of the features of MiMiC's technology.",
+    "continueText": "Click to close."
+  },
+  "cityOverview":
+  {
+    "text": "Your internet traffic is routed through MiMiC's technology so it can be intelligently handled, and achieves resilience through being located worldwide.",
+    "continueText": "Click to close."
+  },
+  "prioritizationCountryView":
+  {
+    "text": "Your office is where the journey begins, and where your business is run using Internet data and applications. These range from voice calls, to email and streaming music.",
+    "continueText": "Click to continue."
+  },
+  "prioritizationBuildingView":
+  {
+    "text":"Your connection, a constrained and limited resource, is your gateway to the world, and usually has no concept of what's important to your business.",
+    "continueText": "Click to continue."
+  },
+  "prioritizationNormalPacketView":
+  {
+    "text":"Without traffic prioritisation, all applications and destinations are treated equally and as a result, packets compete for bandwidth.  Click the packets to find out more about them.",
+    "continueText": "Click to continue."
+  },
+  "prioritizationNormalWipeoutView":
+  {
+    "text":"In this uncontrolled scenario, your important traffic might not get through unimpeded and there may be a detriment to your Internet experience. Click the packets to find out more about them.",
+    "continueText": "Click the MiMiC button to view MiMiC mode."
+  },
+  "prioritizationMimicPacketView":
+  {
+    "text":"Using the MiMiC technology, traffic that is more important to you is given priority over other traffic, and it moves more quickly as a result. Click the packets to find out more about them.",
+    "continueText": "Click to continue."
+  },
+  "prioritizationMimicWipeoutView":
+  {
+    "text":"With intelligent traffic prioritisation implemented, non-essential and non-urgent traffic will cause fewer problems. Your important data takes priority. Click the packets to find out more about them.",
+    "continueText": "Click the MiMiC button to go back to Normal mode."
+  }
+
+}

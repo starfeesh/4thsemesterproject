@@ -5,9 +5,11 @@
     <meta name="viewport" content="user-scalable=no, initial-scale=0.5, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
     <title>3D Product Walkthrough</title>
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <div id="loading"></div>
+<div id="dashboard"></div>
 <canvas id="renderCanvas"></canvas>
 <div id="hud">
     <img src="img/ui/bordertop.png" id="bordertop">
@@ -15,6 +17,24 @@
 </div>
 <div id="textPopup">
 
+</div>
+<div id="wirelessIcon">
+    <div class="wirelessContainer">
+        <div class="wireless">
+            <span class="most_outer_ring_gray"></span>
+            <span class="most_outer_ring fadeIn4"></span>
+            <span class="most_outer_ring_shadow"></span>
+            <span class="outer_ring_gray"></span>
+            <span class="outer_ring fadeIn3"></span>
+            <span class="outer_ring_shadow"></span>
+            <span class="middle_ring_gray"></span>
+            <span class="middle_ring fadeIn2"></span>
+            <span class="middle_ring_shadow"></span>
+            <span class="first_ring_gray"></span>
+            <span class="first_ring fadeIn1"></span>
+            <span class="first_ring_shadow"></span>
+        </div>
+    </div>
 </div>
 <div class="chart">
     <ul>
@@ -24,17 +44,21 @@
     </ul>
 </div>
 <div class="navContainer">
-    <div class="container" id="home">
-        <img src="img/ui/home.png">
-    </div>
-    <div class="container" id="prioritization">
-        <img src="img/ui/prioritization.png">
-    </div>
+    <div class="container" id="home"></div>
+    <div class="container" id="prioritization"></div>
+    <div class="container" id="aggregation"></div>
+    <div class="container" id="resilience"></div>
     <div class="container" id="mimic">
         <!--<img src="img/ui/mimic-active-flare.png" id="flare">-->
-        <img src="img/ui/mimic-off.png" id="mimicButton">
+    </div>
+    <div class="container" id="soMe">
+        <a href="#" class="fa fa-facebook fa-lg"></a>
+        <a href="#" class="fa fa-twitter fa-lg"></a>
+        <a href="#" class="fa fa-linkedin fa-lg"></a>
     </div>
 </div>
+<!-- font load text !-->
+Hello World.
 <script src="js/babylon.custom.js"></script>
 
 <script src="js/animationManager.js"></script>

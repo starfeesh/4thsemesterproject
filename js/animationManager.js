@@ -4,8 +4,8 @@ class AnimationManager {
         var betaAnim 	= new BABYLON.Animation ("betaAnim", "beta", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
         var radiusAnim = new BABYLON.Animation("zoomanim", "radius", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT);
 
-        var alphaKeys 	= [{frame: 0, value: scene.activeCamera.alpha}, {frame: 25, value: 4.6}];
-        var betaKeys 	= [{frame: 0, value: scene.activeCamera.beta},  {frame: 25, value: 0.75}];
+        var alphaKeys 	= [{frame: 0, value: scene.activeCamera.alpha}, {frame: 25, value: 4.7}];
+        var betaKeys 	= [{frame: 0, value: scene.activeCamera.beta},  {frame: 25, value: 0.65}];
         var radiusKeys 	= [{frame: 0, value: scene.activeCamera.radius},  {frame: 20, value: 5}];
         alphaAnim.setKeys(alphaKeys);
         betaAnim.setKeys(betaKeys);
@@ -36,29 +36,25 @@ class AnimationManager {
         globeCamera.animations.push(animation);
     }
     cameraFlyThrough(cameraParent) {
-        var movementAnim = new BABYLON.Animation("cameraFlyThrough", "position", 10, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+        var movementAnim = new BABYLON.Animation("cameraFlyThrough", "position", 15, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
             BABYLON.ANIMATIONLOOPMODE_CONSTANT);
 
-        var movementKeys = [
-            { frame: 0, value: new BABYLON.Vector3(119, 8, -610) },
-            { frame: 50, value: new BABYLON.Vector3(119, 8, -873) },
-            { frame: 75, value: new BABYLON.Vector3(101, 8, -873) },
-            { frame: 100, value: new BABYLON.Vector3(101, 30, -873) },
-            { frame: 110, value: new BABYLON.Vector3(101, 30, -895) }
-        ];
+        var cubicBezierVectors = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(100, 3000, -4000), new BABYLON.Vector3(101, 800, 0), new BABYLON.Vector3(101, 800, 800), new BABYLON.Vector3(101, 30, -895), 200);
+        var path = cubicBezierVectors.getPoints();
+        var movementKeys = [];
+        for (var i = 0; i < path.length; i++) {
+            movementKeys.push({ frame: i, value: path[i] });
+        }
         movementAnim.setKeys(movementKeys);
 
-        var turningAnim = new BABYLON.Animation("turningFlyThrough", "rotation.y", 10, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+        var turningAnim = new BABYLON.Animation("turningFlyThrough", "rotation.y", 15, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
             BABYLON.ANIMATIONLOOPMODE_CONSTANT);
 
         var turningKeys = [
-            { frame: 0, value: 0 },
-            { frame: 50, value: 0 },
-            { frame: 55, value: 1.5708 },
-            { frame: 75, value: 1.5708 },
-            { frame: 80, value: 0 },
-            { frame: 105, value: 0 },
-            { frame: 110, value: 3.14 }
+            { frame: 0, value: 3.14 },
+            { frame: 100, value: 3.14 },
+            { frame: 150, value: 0 },
+            { frame: 195, value: 0 }
         ];
         turningAnim.setKeys(turningKeys);
 
