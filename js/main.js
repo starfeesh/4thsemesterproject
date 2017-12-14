@@ -8,6 +8,8 @@ var loadingScreen,
     particleManager,
     infoHandler;
 
+// JsonHandler reads JSON from file, loads the JSON and the callback is then used
+// in various scenarios and modes. Once all JSON is loaded, the StateManager is called.
 class JsonHandler {
     constructor() {
         this.resources = [
@@ -58,11 +60,16 @@ class JsonHandler {
 
     }
 }
+// ObjectFactory is called from StateManager and instantiates the class with its
+// name and potential parameters.
 class ObjectFactory {
     constructor(className, constructorParams) {
         return new dynamicClassMap[className](constructorParams);
     }
 }
+// StateManager is called from JsonHandler and handles the changing of modes and
+// scenarios, taking in a class name string, retrieving the class names from JSON and
+// passing them to ObjectFactory, to then be instantiated.
 class StateManager {
     setUp() {
         var stage = new Stage();
@@ -92,6 +99,7 @@ class StateManager {
         this.currentMode.setUp();
     }
 }
+// Stage sets up the base scene, camera, light, UI and skybox. It also contains the render loop.
 class Stage {
     constructor() {
         scene = new BABYLON.Scene(engine);
@@ -99,10 +107,8 @@ class Stage {
         scene.clearColor = new BABYLON.Color3(0.5, 0.5, 0.5);
         camera = new BABYLON.ArcRotateCamera("globeCamera", 0,0,0, BABYLON.Vector3.Zero(), scene);
         camera.setPosition(new BABYLON.Vector3(-100, 100, -100));
-        camera.attachControl(canvas, true);
         camera.lowerRadiusLimit = 90;
         camera.upperRadiusLimit = 330;
-
         light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
         light.intensity = 0.5;
 
@@ -111,11 +117,6 @@ class Stage {
         uIHandler.createUIBase();
         uIHandler.createUIElements();
         this.createSkybox();
-
-        //setInterval(function () {
-        //    console.log(stateManager.currentScenario.babylonObjects);
-        //    console.log(camera.radius)
-        //}, 10000);
 
         engine.runRenderLoop(function () {
             scene.render();
@@ -135,6 +136,9 @@ class Stage {
         skybox.material = skyboxMat;
     }
 }
+// Custom loading screen to sit on top of Babylon.JS's loading screen.
+// Mostly handled with HTML and CSS. Future improvement would be to
+// merge the packet methods.
 class LoadingScreen {
     constructor() {
         this.loadedObjects = [];
@@ -277,6 +281,7 @@ class LoadingScreen {
 
     }
 }
+// Parent class for Scenarios, this class simply contains tearDown to clean up.
 class BaseScenario {
     constructor() {
         // Anytime anything is created, push to this.babylonObjects.
@@ -296,6 +301,9 @@ class BaseScenario {
         infoHandler.hideInfo();
     }
 }
+// BaseMode is the parent class of Modes, child class of Scenarios.
+// Includes packetUI code, in order to cut down on repetition, as
+// all of the modes need to access the packetUI method.
 class BaseMode extends BaseScenario {
     constructor() {
         super();
@@ -488,8 +496,11 @@ class BaseMode extends BaseScenario {
         }
     }
 }
-
+// DynamicClassMap contains the scenarios and modes which make up the vast majority of the code.
+// A lot of repetition done in here, that should eventually be cleaned up and inserted into parent classes.
 const dynamicClassMap = {
+    // Network overview scenario. Creates the connections between cities based on bezier curves defined
+    // in JSON. Then, creates the city names and plays sounds.
     OverviewScenario: class extends BaseScenario {
         constructor() {
             super();
@@ -503,7 +514,7 @@ const dynamicClassMap = {
             var loader = new BABYLON.AssetsManager(scene);
             //loader.useDefaultLoadingScreen = false;
             var globe = loader.addMeshTask("globe", "", "models/", "globe7.babylon");
-            var innerGlobe = loader.addMeshTask("outer", "", "models/", "inner.babylon");
+            var countries = loader.addMeshTask("outer", "", "models/", "inner.babylon");
             var highlight = new BABYLON.HighlightLayer("hl", scene);
 
             globe.onSuccess = function (task) {
@@ -515,7 +526,7 @@ const dynamicClassMap = {
 
             }.bind(this);
 
-            innerGlobe.onSuccess = function (task) {
+            countries.onSuccess = function (task) {
                 this.babylonObjects.push(task.loadedMeshes[0]);
             }.bind(this);
 
@@ -608,7 +619,7 @@ const dynamicClassMap = {
             text.text = location;
             text.fontSize = 20;
             text.color = "#ffffff";
-            text.fontFamily = "Century Gothic";
+            text.fontFamily = "Arial";
             text.fontStyle = "bold";
             advancedTextTexture.addControl(text);
 
@@ -664,6 +675,8 @@ const dynamicClassMap = {
             console.log("- Reached Overview Dummy Mode")
         }
     },
+    // Prioritization Scenario is the lead up to the modes. This plays an animation with the camera, zooms in
+    // on the city, and shows info boxes.
     PrioritizationScenario: class extends BaseScenario {
         constructor() {
             super();
@@ -672,13 +685,6 @@ const dynamicClassMap = {
             console.log("Reached Prioritization Scenario");
 
             light.intensity = 0.3;
-
-            //var ground = new BABYLON.Mesh.CreateGround("ground", 2000, 2000, 2, scene);
-            //ground.position.y = -0.2;
-            //var groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-            //groundMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-            //groundMat.specularColor = new BABYLON.Color3(0, 0, 0);
-            //ground.material = groundMat;
 
             var loader = new BABYLON.AssetsManager(scene);
             //loader.useDefaultLoadingScreen = false;
@@ -754,12 +760,6 @@ const dynamicClassMap = {
 
             this.babylonObjects.push(loader, city, camHolder, flyCam, anims, uk)
         }
-        showDashboard() {
-
-        }
-        hideDashboard() {
-
-        }
         pauseAndShowInfo(anim, info) {
             anim.pause();
             var border = infoHandler.showInfo(info);
@@ -788,6 +788,10 @@ const dynamicClassMap = {
             console.log("- Reached Prioritization Dummy Mode");
         }
     },
+    // "Top down normal mode" is the packet view. Lanes for the spheres to follow are created, and the
+    // initial sphere is cloned to improve performance. Then, packets are animated along the lanes and
+    // the camera is animated around the scene. "Placed" packets are then created to be interacted with.
+    // Most code is repeated throughout modes, and should be placed in parent BaseMode.
     PrioritizationTopDownNormalMode: class extends BaseMode {
         constructor() {
             super();
@@ -984,8 +988,8 @@ const dynamicClassMap = {
             packetSphere.clicked = false;
             packetSphere.application = "Voice call";
             packetSphere.destination = "Skype";
-            packetSphere.scheduling = "Low-latency priority";
-            packetSphere.bandwidth = "Assured 90kb/s";
+            packetSphere.scheduling = "Best effort only";
+            packetSphere.bandwidth = "Best effort only";
 
             var radius = Math.floor(Math.random() * 10) + 20;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, greenPath);
@@ -1151,6 +1155,10 @@ const dynamicClassMap = {
             infoHandler.hideInfo();
         }
     },
+    // "Top down mimic mode" is the packet view in MiMiC mode. Lanes for the spheres to follow are created, and the
+    // initial sphere is cloned to improve performance. Then, packets are animated along the lanes and
+    // the camera is animated around the scene. "Placed" packets are then created to be interacted with.
+    // Most code is repeated throughout modes, and should be placed in parent BaseMode.
     PrioritizationTopDownMimicMode: class extends BaseMode {
         constructor() {
             super();
@@ -1559,6 +1567,10 @@ const dynamicClassMap = {
             infoHandler.hideInfo();
         }
     },
+    // "Wipeout" mode is the close-up view of packet lanes. Lanes for the spheres to follow are created, and the
+    // initial sphere is cloned to improve performance. Then, packets are animated along the lanes and
+    // the camera is animated around the scene. "Placed" packets are then created to be interacted with.
+    // Most code is repeated throughout modes, and should be placed in parent BaseMode.
     PrioritizationWipeoutNormalMode: class extends BaseMode {
         constructor() {
             super();
@@ -1703,7 +1715,7 @@ const dynamicClassMap = {
                 }
                 var mimic = document.querySelector("#mimic");
                 mimic.style.background = "url('img/ui/mimic-full.png') no-repeat 0 0";
-                mimic.style.backgroundSize = "300%";
+                mimic.style.backgroundSize = "400%";
                 uIHandler.removeMimicPointer();
                 uIHandler.showMimicPointer();
 
@@ -1904,6 +1916,10 @@ const dynamicClassMap = {
             });
         }
     },
+    // "Wipeout Mimic" mode is the close-up view of packet lanes in Mimic mode. Lanes for the spheres to follow are
+    // created, and the initial sphere is cloned to improve performance. Then, packets are animated along the lanes
+    // and the camera is animated around the scene. "Placed" packets are then created to be interacted with.
+    // Most code is repeated throughout modes, and should be placed in parent BaseMode.
     PrioritizationWipeoutMimicMode: class extends BaseMode {
         constructor() {
             super();
@@ -2083,7 +2099,7 @@ const dynamicClassMap = {
 
                 var mimic = document.querySelector("#mimic");
                 mimic.style.background = "url('img/ui/mimic-full.png') no-repeat 100% 0";
-                mimic.style.backgroundSize = "300%";
+                mimic.style.backgroundSize = "400%";
                 uIHandler.removeMimicPointer();
                 uIHandler.showMimicPointer();
 
@@ -2279,6 +2295,9 @@ const dynamicClassMap = {
 
     }
 };
+// InfoHandler retrieves text JSON based off of a string parameter, creates the boarder image
+// plays a sound and for the overview scenario, attaches a listener to close the info box.
+// Other classes handle the closing of the info box themselves, by calling hideInfo() here.
 class InfoHandler {
     constructor() {
         this.infoIsShown = false;
@@ -2382,6 +2401,8 @@ class InfoHandler {
         }
     }
 }
+// InputHandler attaches the listeners to the individual objects, with their associated methods.
+// Likely unneeded abstraction.
 class InputHandler {
     attachClickUIListener(obj, methodName) {
         obj.onPointerUpObservable.add(methodName);
@@ -2407,7 +2428,8 @@ class InputHandler {
         obj.removeEventListener(type, methodName);
     }
 }
-
+// UIHandler is used to attach the coded functionality to the HTML buttons, icons and other
+// various objects.
 class UIHandler {
     createUIBase() {
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -2423,7 +2445,7 @@ class UIHandler {
     createUIElements() {
         var mimic = document.querySelector("#mimic");
         this.hover = function () {
-            mimic.style.backgroundPosition = "50% 0";
+            mimic.style.backgroundPosition = "33.33% 0";
         };
         this.hoverOut = function () {
             mimic.style.backgroundPosition = "0 0";
@@ -2519,9 +2541,9 @@ class UIHandler {
     }
 }
 
-var debugMode = true;
+var debugMode = false;
 
-
+// Start the application
 document.addEventListener('DOMContentLoaded', function () {
     loadingScreen = new LoadingScreen();
     if (BABYLON.Engine.isSupported){
@@ -2538,6 +2560,8 @@ document.addEventListener('DOMContentLoaded', function () {
         stateManager = new StateManager();
     }
 });
-window.addEventListener("resize", function () { // Watch for browser/canvas resize events
+
+// Watch for browser/canvas resize events
+window.addEventListener("resize", function () {
     engine.resize();
 });
