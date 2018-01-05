@@ -508,7 +508,7 @@ const dynamicClassMap = {
             this.cameraSpeed = 0.001;
         }
         setUp() {
-            console.log("Reached Overview Scenario");
+            //console.log("Reached Overview Scenario");
             camera.setPosition(new BABYLON.Vector3(-100, 100, -100));
             scene.activeCamera = camera;
             var loader = new BABYLON.AssetsManager(scene);
@@ -672,7 +672,7 @@ const dynamicClassMap = {
             super();
         }
         setUp() {
-            console.log("- Reached Overview Dummy Mode")
+            //console.log("- Reached Overview Dummy Mode")
         }
     },
     // Prioritization Scenario is the lead up to the modes. This plays an animation with the camera, zooms in
@@ -682,7 +682,7 @@ const dynamicClassMap = {
             super();
         }
         setUp() {
-            console.log("Reached Prioritization Scenario");
+            //console.log("Reached Prioritization Scenario");
 
             light.intensity = 0.3;
 
@@ -785,7 +785,7 @@ const dynamicClassMap = {
             super();
         }
         setUp() {
-            console.log("- Reached Prioritization Dummy Mode");
+            //console.log("- Reached Prioritization Dummy Mode");
         }
     },
     // "Top down normal mode" is the packet view. Lanes for the spheres to follow are created, and the
