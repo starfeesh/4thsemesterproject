@@ -508,6 +508,7 @@ const dynamicClassMap = {
             this.cameraSpeed = 0.001;
         }
         setUp() {
+            inputHandler.attachDOMListener(uIHandler.home, uIHandler.setOverviewState);
             //console.log("Reached Overview Scenario");
             camera.setPosition(new BABYLON.Vector3(-100, 100, -100));
             scene.activeCamera = camera;
@@ -683,7 +684,7 @@ const dynamicClassMap = {
         }
         setUp() {
             //console.log("Reached Prioritization Scenario");
-
+            inputHandler.attachDOMListener(uIHandler.prioritization, uIHandler.setPrioritizationState);
             light.intensity = 0.3;
 
             var loader = new BABYLON.AssetsManager(scene);
@@ -2451,7 +2452,8 @@ class UIHandler {
             mimic.style.backgroundPosition = "0 0";
         };
 
-        var setOverviewState = function () {
+        this.setOverviewState = function () {
+            inputHandler.removeDOMListener(this.home, "click", this.setOverviewState);
             mimic.style.background = "url('img/ui/mimic-off.png') no-repeat 0 0";
             mimic.style.backgroundSize = "100%";
             inputHandler.removeDOMListener(mimic, "mouseenter", this.hover);
@@ -2460,10 +2462,10 @@ class UIHandler {
             stateManager.changeScenario("overview");
         }.bind(this);
 
-        var home = document.querySelector("#home");
-        inputHandler.attachDOMListener(home, setOverviewState);
+        this.home = document.querySelector("#home");
+        inputHandler.attachDOMListener(this.home, this.setOverviewState);
 
-        var setPrioritizationState = function () {
+        this.setPrioritizationState = function () {
             mimic.style.background = "url('img/ui/mimic-off.png') no-repeat 0 0";
             mimic.style.backgroundSize = "100%";
             inputHandler.removeDOMListener(mimic, "mouseenter", this.hover);
@@ -2472,16 +2474,18 @@ class UIHandler {
             stateManager.changeScenario("prioritization");
         }.bind(this);
 
-        var rotateGlobe = function () {
+        this.rotateGlobe = function () {
+            inputHandler.removeDOMListener(this.prioritization, "click", this.rotateGlobe);
             if (stateManager.newScenarioClassName === "OverviewScenario") {
-                stateManager.currentScenario.rotate(setPrioritizationState);
+                stateManager.currentScenario.rotate(this.setPrioritizationState);
             }
             else {
+                inputHandler.removeDOMListener(this.prioritization, "click", this.setPrioritizationState);
                 stateManager.changeScenario("prioritization");
             }
-        };
-        var prioritization = document.querySelector("#prioritization");
-        inputHandler.attachDOMListener(prioritization, rotateGlobe);
+        }.bind(this);
+        this.prioritization = document.querySelector("#prioritization");
+        inputHandler.attachDOMListener(this.prioritization, this.rotateGlobe);
 
         var chart = document.querySelector(".chart");
         inputHandler.attachDOMListener(chart, this.showDashboard);
