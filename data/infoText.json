@@ -27,7 +27,7 @@
   "prioritizationNormalWipeoutView":
   {
     "text":"In this uncontrolled scenario, your important traffic might not get through unimpeded and there may be a detriment to your Internet experience. Click the packets to find out more about them.",
-    "continueText": "Click the MiMiC button to view MiMiC mode."
+    "continueText": "Click to continue, and use the MiMiC button to view MiMiC mode."
   },
   "prioritizationMimicPacketView":
   {
@@ -37,7 +37,7 @@
   "prioritizationMimicWipeoutView":
   {
     "text":"With intelligent traffic prioritisation implemented, non-essential and non-urgent traffic will cause fewer problems. Your important data takes priority. Click the packets to find out more about them.",
-    "continueText": "Click the MiMiC button to go back to Normal mode."
+    "continueText": "Click to return to the points of presence."
   }
 
 }

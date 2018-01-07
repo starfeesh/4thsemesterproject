@@ -994,7 +994,7 @@ const dynamicClassMap = {
 
             var radius = Math.floor(Math.random() * 10) + 20;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, greenPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
@@ -1005,9 +1005,13 @@ const dynamicClassMap = {
 
             var greenPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1043,7 +1047,7 @@ const dynamicClassMap = {
 
             var radius = Math.floor(Math.random() * 5) + 25;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, yellowPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
@@ -1054,9 +1058,13 @@ const dynamicClassMap = {
 
             var yellowPausePoint = new BABYLON.AnimationEvent(90, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1094,15 +1102,19 @@ const dynamicClassMap = {
 
             var radius = Math.floor(Math.random() * 10) + 15;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, redPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
             var redPausePoint = new BABYLON.AnimationEvent(80, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1406,7 +1418,7 @@ const dynamicClassMap = {
 
             var radius = 0;
             var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, greenPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1.5, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
@@ -1417,9 +1429,13 @@ const dynamicClassMap = {
 
             var greenPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1455,7 +1471,7 @@ const dynamicClassMap = {
 
             var radius = 10;
             var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, yellowPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
@@ -1466,9 +1482,13 @@ const dynamicClassMap = {
 
             var yellowPausePoint = new BABYLON.AnimationEvent(90, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1506,15 +1526,19 @@ const dynamicClassMap = {
 
             var radius = 20;
             var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, redPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 0.8, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
             var redPausePoint = new BABYLON.AnimationEvent(80, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1705,50 +1729,64 @@ const dynamicClassMap = {
                     animatable.pause();
                 }.bind(this));
                 this.allAnims.forEach(function (animatable) {
-                    animatable.pause();
+                    this.pauseAndShowInfo(animatable, "prioritizationNormalWipeoutView");
                 }.bind(this));
-
-                var border = infoHandler.showInfo("prioritizationNormalWipeoutView");
-                if (typeof border !== "undefined") {
-                    if (border.classList.contains("borderPointer")) {
-                        border.classList.remove("borderPointer");
-                    }
-                }
-                var mimic = document.querySelector("#mimic");
-                mimic.style.background = "url('img/ui/mimic-full.png') no-repeat 0 0";
-                mimic.style.backgroundSize = "400%";
-                uIHandler.removeMimicPointer();
-                uIHandler.showMimicPointer();
-
-                inputHandler.attachDOMHoverListener(mimic, uIHandler.hover);
-                inputHandler.attachDOMHoverOutListener(mimic, uIHandler.hoverOut);
-
-                this.babylonObjects.push(border);
-
-                var setMode = function () {
-                    this.destroyPacketUI();
-                    infoHandler.hideInfo();
-                    loadingScreen.displayLoadingUI();
-                    setTimeout(function () {
-                        stateManager.changeMode("prioritization", "topDownMimic");
-
-                        var mimic = document.querySelector("#mimic");
-                        mimic.style.background = "url('img/ui/mimic-off.png') no-repeat 0 0";
-                        mimic.style.backgroundSize = "100%";
-                        inputHandler.removeDOMListener(mimic, "click", setMode);
-                        inputHandler.removeDOMListener(mimic, "mouseenter", uIHandler.hover);
-                        inputHandler.removeDOMListener(mimic, "mouseleave", uIHandler.hoverOut);
-                    }, 4500);
-                }.bind(this);
-
-                inputHandler.attachDOMListener(mimic, setMode);
 
             }.bind(this));
             movementAnim.addEvent(wipeoutPausePoint);
 
             this.babylonObjects.push(origin, p1, p2, destination, bezierVector, path, dummy, dummyMat, anim, animatable);
         }
+        pauseAndShowInfo(anim, info) {
+            this.spawnerEnabled = false;
 
+            anim.pause();
+            var border = infoHandler.showInfo(info);
+            if (typeof border !== "undefined") {
+                if (!border.classList.contains("borderPointer")) {
+                    border.classList.add("borderPointer");
+                }
+            }
+
+            var continueFunction = function () {
+                this.startAndHideInfo();
+            }.bind(this);
+
+            if (typeof border !== "undefined"){
+                inputHandler.attachDOMListener(border, continueFunction);
+            }
+        }
+        startAndHideInfo() {
+            infoHandler.hideInfo();
+
+            var mimic = document.querySelector("#mimic");
+            mimic.style.background = "url('img/ui/mimic-full.png') no-repeat 0 0";
+            mimic.style.backgroundSize = "400%";
+            uIHandler.removeMimicPointer();
+            uIHandler.showMimicPointer();
+
+            inputHandler.attachDOMHoverListener(mimic, uIHandler.hover);
+            inputHandler.attachDOMHoverOutListener(mimic, uIHandler.hoverOut);
+
+            var setMode = function () {
+                this.destroyPacketUI();
+
+                loadingScreen.displayLoadingUI();
+                setTimeout(function () {
+                    stateManager.changeMode("prioritization", "topDownMimic");
+
+                    var mimic = document.querySelector("#mimic");
+                    mimic.style.background = "url('img/ui/mimic-off.png') no-repeat 0 0";
+                    mimic.style.backgroundSize = "100%";
+                    inputHandler.removeDOMListener(mimic, "click", setMode);
+                    inputHandler.removeDOMListener(mimic, "mouseenter", uIHandler.hover);
+                    inputHandler.removeDOMListener(mimic, "mouseleave", uIHandler.hoverOut);
+                }, 4500);
+            }.bind(this);
+
+            inputHandler.attachDOMListener(mimic, setMode);
+
+        }
         createGreenPacket() {
             var green = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(140, 550, -444), new BABYLON.Vector3(140, 550, 444), new BABYLON.Vector3(102, 40, 898), 130);
             var greenPath = green.getPoints();
@@ -1770,7 +1808,7 @@ const dynamicClassMap = {
 
             var radius = 5;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, greenPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1.5, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1.5, function () {
                 packetSphere.dispose();
             });
 
@@ -1781,9 +1819,13 @@ const dynamicClassMap = {
 
             var greenPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1820,7 +1862,7 @@ const dynamicClassMap = {
 
             var radius = 5;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, yellowPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
@@ -1831,9 +1873,13 @@ const dynamicClassMap = {
 
             var yellowPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -1872,15 +1918,19 @@ const dynamicClassMap = {
 
             var radius = 5;
             var anim = animManager.moveTopDownPlacedPackets(packetSphere, radius, redPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 0.8, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 0.8, function () {
                 packetSphere.dispose();
             });
 
             var redPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -2088,44 +2138,37 @@ const dynamicClassMap = {
                     animatable.pause();
                 }.bind(this));
                 this.allAnims.forEach(function (animatable) {
-                    animatable.pause();
+                    this.pauseAndShowInfo(animatable, "prioritizationMimicWipeoutView");
                 }.bind(this));
-
-                var border = infoHandler.showInfo("prioritizationMimicWipeoutView");
-                if (typeof border !== "undefined") {
-                    if (border.classList.contains("borderPointer")) {
-                        border.classList.remove("borderPointer");
-                    }
-                }
-
-                var mimic = document.querySelector("#mimic");
-                mimic.style.background = "url('img/ui/mimic-full.png') no-repeat 100% 0";
-                mimic.style.backgroundSize = "400%";
-                uIHandler.removeMimicPointer();
-                uIHandler.showMimicPointer();
-
-                var setMode = function () {
-                    this.destroyPacketUI();
-                    infoHandler.hideInfo();
-                    loadingScreen.displayLoadingUI();
-                    setTimeout(function () {
-                        stateManager.changeMode("prioritization", "topDownNormal");
-
-                        var mimic = document.querySelector("#mimic");
-                        mimic.style.background = "url('img/ui/mimic-off.png') no-repeat 0 0";
-                        mimic.style.backgroundSize = "100%";
-                        inputHandler.removeDOMListener(mimic, "click", setMode);
-                    }, 4500);
-                }.bind(this);
-
-                inputHandler.attachDOMListener(mimic, setMode);
-
             }.bind(this));
             movementAnim.addEvent(wipeoutPausePoint);
 
             this.babylonObjects.push(origin, p1, p2, destination, bezierVector, path, dummy, dummyMat, anim, animatable)
         }
+        pauseAndShowInfo(anim, info) {
+            this.spawnerEnabled = false;
 
+            anim.pause();
+            var border = infoHandler.showInfo(info);
+            if (typeof border !== "undefined") {
+                if (!border.classList.contains("borderPointer")) {
+                    border.classList.add("borderPointer");
+                }
+            }
+
+            var continueFunction = function () {
+                this.startAndHideInfo();
+            }.bind(this);
+
+            if (typeof border !== "undefined"){
+                inputHandler.attachDOMListener(border, continueFunction);
+            }
+        }
+        startAndHideInfo() {
+            stateManager.changeScenario("overview");
+
+            infoHandler.hideInfo();
+        }
         createGreenPacket() {
             var green = BABYLON.Curve3.CreateCubicBezier(new BABYLON.Vector3(102, 40, -898), new BABYLON.Vector3(100, 550, -444), new BABYLON.Vector3(100, 550, 444), new BABYLON.Vector3(102, 40, 898), 130);
             var greenPath = green.getPoints();
@@ -2147,7 +2190,7 @@ const dynamicClassMap = {
 
             var radius = 5;
             var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, greenPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1.5, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1.5, function () {
                 packetSphere.dispose();
             });
 
@@ -2158,9 +2201,13 @@ const dynamicClassMap = {
 
             var greenPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -2197,7 +2244,7 @@ const dynamicClassMap = {
 
             var radius = 5;
             var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, yellowPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 1, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 1, function () {
                 packetSphere.dispose();
             });
 
@@ -2208,9 +2255,13 @@ const dynamicClassMap = {
 
             var yellowPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;
@@ -2249,15 +2300,19 @@ const dynamicClassMap = {
 
             var radius = 5;
             var anim = animManager.moveTopDownMimicPlacedPackets(packetSphere, radius, redPath);
-            var animatable = scene.beginAnimation(packetSphere, 0, 180, false, 0.8, function () {
+            var animatable = scene.beginDirectAnimation(packetSphere, [anim], 0, 180, false, 0.8, function () {
                 packetSphere.dispose();
             });
 
             var redPausePoint = new BABYLON.AnimationEvent(100, function () {
                 animatable.pause();
+                var pulseAnim = animManager.pulsePacket(packetSphere);
+                var pulseAnimatable = scene.beginDirectAnimation(packetSphere, [pulseAnim], 0, 10, true);
+
                 this.allAnims.push(animatable);
                 packetSphere.actionManager = new BABYLON.ActionManager(scene);
                 var click = function () {
+                    pulseAnimatable.pause();
                     if (this.packetInfoIsOpen) {
                         this.destroyPacketUI();
                         this.packetInfoIsOpen = false;

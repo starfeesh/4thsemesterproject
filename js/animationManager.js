@@ -194,4 +194,17 @@ class AnimationManager {
 
         return targetAnim;
     }
+    pulsePacket(packet) {
+        var pulseAnim = new BABYLON.Animation("pulseAnim", "scaling", 10, BABYLON.Animation.ANIMATIONTYPE_VECTOR3);
+        var pulseKeys = [
+            { frame: 0, value: new BABYLON.Vector3(1, 1, 1) },
+            { frame: 5, value: new BABYLON.Vector3(0.5, 0.5, 0.5) },
+            { frame: 10, value: new BABYLON.Vector3(1, 1, 1) }
+        ];
+
+        pulseAnim.setKeys(pulseKeys);
+        packet.animations.push(pulseAnim);
+
+        return pulseAnim;
+    }
 }
